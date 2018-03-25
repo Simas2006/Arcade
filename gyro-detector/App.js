@@ -6,6 +6,7 @@ export default class GyroApp extends React.Component {
   state = {
     accelerometerData: {},
     recentCalls: 0,
+    recentCallItem: 0,
     aValue: 0
   }
   componentDidMount() {
@@ -28,7 +29,7 @@ export default class GyroApp extends React.Component {
     req.onload = function() {
       // ok
     }
-    req.open("GET",`http://10.0.1.97:8000?${info}`);
+    req.open("GET",`http://10.0.1.97:8000/send?${info}`);
     req.send();
   }
   render() {
@@ -74,7 +75,10 @@ export default class GyroApp extends React.Component {
     this.state.aValue = 0;
     var position = this.state.accelerometerData;
     if ( this.state.recentCalls == 6 ) {
-      if ( (position.x < 0.2 && position.x > -0.2) || (position.z < 0.2 && position.z > -0.2) ) this.state.recentCalls = 0;
+      if ( (position.x < 0.2 && position.x > -0.2) && this.state.recentCallItem == 1 || (position.z < 0.2 && position.z > -0.2) && this.state.recentCallItem == 2 ) {
+        this.state.recentCalls = 5;
+        this.state.recentCallItem = 0;
+      }
       return _staticData;
     }
     if ( this.state.recentCalls <= 5 && this.state.recentCalls > 0 ) this.state.recentCalls--;
@@ -82,12 +86,14 @@ export default class GyroApp extends React.Component {
     if ( position.x >= 1 || position.x <= -1 ) {
       directions.x = Math.sign(position.x);
       this.state.recentCalls = 6;
+      this.state.recentCallItem = 1;
     }
     if ( position.z >= 1 || position.z <= -1 ) {
       directions.z = Math.sign(position.z);
       this.state.recentCalls = 6;
+      this.state.recentCallItem = 2;
     }
-    if ( position.x >= 1 || position.x <= -1 || position.z >= 1 || position.z <= -1 ) this._sendInfo(JSON.stringify(directions));
+    if ( directions.x != 0 || directions.z != 0 || directions.a != 0 ) this._sendInfo(JSON.stringify(directions));
     return _staticData;
   }
 }
