@@ -5,10 +5,9 @@
     "expo": "^25.0.0",
     "react": "16.2.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-25.0.0.tar.gz",
-    "react-native-sensor-manager": "^0.1.10"
   },
   "name": "gryo-detector",
   "version": "0.0.0",
-  "description": "Hello Expo!",
-  "author": null
+  "description": "Gyro detector for arcade.",
+  "author": "Simas06"
 }
