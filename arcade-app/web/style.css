@@ -1,0 +1,17 @@
+body {
+  font-family: "Arial";
+  font-size: 120%;
+}
+#bj-game {
+  background-color: black;
+  color: white;
+}
+.bj-card-box {
+  border: 1px solid white;
+  height: 46vh;
+}
+.bj-card-box > canvas {
+  width: calc(16vh * 0.75);
+  height: 16vh;
+  padding: 5px;
+}
