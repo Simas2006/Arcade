@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo';
 
-export default class AccelerometerSensor extends React.Component {
+export default class GyroApp extends React.Component {
   state = {
     accelerometerData: {},
     recentCalls: 0,
@@ -22,6 +22,14 @@ export default class AccelerometerSensor extends React.Component {
   }
   _intentionalCrash() {
     throw new Error("Disconnected from server.");
+  }
+  _sendInfo(info) {
+    var req = new XMLHttpRequest();
+    req.onload = function() {
+      // ok
+    }
+    req.open("GET",`http://10.0.1.97:8000?${info}`);
+    req.send();
   }
   render() {
     var _staticData = (
@@ -79,7 +87,7 @@ export default class AccelerometerSensor extends React.Component {
       directions.z = Math.sign(position.z);
       this.state.recentCalls = 6;
     }
-    console.log(directions);
+    if ( position.x >= 1 || position.x <= -1 || position.z >= 1 || position.z <= -1 ) this._sendInfo(JSON.stringify(directions));
     return _staticData;
   }
 }
