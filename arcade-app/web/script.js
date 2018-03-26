@@ -10,6 +10,7 @@ var gameState = {
     aces: 0
   }
 }
+var winner = 0;
 
 socket.on("directions",console.log);
 
@@ -116,11 +117,49 @@ function renderCard(element,cardID) {
   }
 }
 
+function hit() {
+  if ( gameState.activeDeck.length <= 0 ) {
+    for ( var i = 1; i <= 13; i++ ) {
+      for ( var j = 0; j < 4; j++ ) {
+        gameState.activeDeck.push(["CDHS".split("")[j],i]);
+      }
+    }
+    gameState.activeDeck = shuffle(gameState.activeDeck);
+  }
+  var selected = gameState.activeDeck[0];
+  var number = selected[1];
+  gameState.activeDeck = gameState.activeDeck.slice(1);
+  renderCard(document.getElementById("bj-player-cards"),selected);
+  gameState.player.sum += Math.min(number == 1 ? 11 : number,11);
+  if ( number == 1 ) gameState.player.aces++;
+  if ( gameState.player.sum > 21 ) {
+    if ( gameState.player.aces > 0 ) gameState.player.sum -= 10;
+    else winner = 1;
+  }
+  if ( gameState.player.sum == 21 ) {
+    winner = 2;
+  }
+  document.getElementById("bj-player-info").innerText = `Player cards: (Total = ${gameState.player.sum}) ${["","LOSS","WIN"][winner]}`;
+  document.getElementById("bj-dealer-info").innerText = `Dealer cards: (Total = ${gameState.dealer.sum}) ${["","WIN","LOSS"][winner]}`;
+}
+
+function shuffle(a) {
+  for ( var i = a.length - 1; i > 0; i-- ) {
+    j = Math.floor(Math.random() * (i + 1));
+    var x = a[i];
+    a[i] = a[j];
+    a[j] = x;
+  }
+  return a;
+}
+
 window.onload = function() {
   for ( var i = 1; i <= 13; i++ ) {
     for ( var j = 0; j < 4; j++ ) {
       gameState.activeDeck.push(["CDHS".split("")[j],i]);
     }
   }
-  renderCard(document.getElementById("bj-player-cards"),["C","1"]);
+  gameState.activeDeck = shuffle(gameState.activeDeck);
+  hit();
+  hit();
 }
