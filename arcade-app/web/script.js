@@ -14,7 +14,7 @@ var gameState = {
 socket.on("directions",console.log);
 
 function renderCard(element,cardID) {
-  var cardNumber = cardID[1];
+  var cardNumber = parseInt(cardID[1]);
   cardID[0] = "CDHS".split("").indexOf(cardID[0]);
   cardID[1] = "_A23456789TJQK".split("")[cardNumber];
   function drawClub(x,y,scale) {
@@ -88,7 +88,7 @@ function renderCard(element,cardID) {
     ctx.closePath();
     ctx.fill();
   }
-  var patterns = [[[0,0,0],[0,0,0],[0,1,0],[0,0,0],[0,0,0]],[[0,1,0],[0,0,0],[0,0,0],[0,0,0],[0,1,0]],[[0,1,0],[0,0,0],[0,1,0],[0,0,0],[0,1,0]],[[1,0,1],[0,0,0],[0,0,0],[0,0,0],[1,0,1]],[[1,0,1],[0,0,0],[0,1,0],[0,0,0],[1,0,1]],[[1,0,1],[0,0,0],[1,0,1],[0,0,0],[1,0,1]],[[1,0,1],[0,1,0],[1,0,1],[0,0,0],[1,0,1]],[[1,0,1],[0,1,0],[1,0,1],[0,1,0],[1,0,1]],[[1,0,1],[1,0,1],[0,1,0],[1,0,1],[1,0,1]],[[1,0,1],[1,0,1],[1,0,1],[1,0,1],[1,0,1]]];
+  var patterns = [[[0,0,0],[0,0,0],[0,1,0],[0,0,0],[0,0,0]],[[0,1,0],[0,0,0],[0,0,0],[0,0,0],[0,1,0]],[[0,1,0],[0,0,0],[0,1,0],[0,0,0],[0,1,0]],[[1,0,1],[0,0,0],[0,0,0],[0,0,0],[1,0,1]],[[1,0,1],[0,0,0],[0,1,0],[0,0,0],[1,0,1]],[[1,0,1],[0,0,0],[1,0,1],[0,0,0],[1,0,1]],[[1,0,1],[0,1,0],[1,0,1],[0,0,0],[1,0,1]],[[1,0,1],[0,1,0],[1,0,1],[0,1,0],[1,0,1]],[[1,0,1],[1,0,1],[0,1,0],[1,0,1],[1,0,1]],[[1,0,1],[1,0,1],[1,0,1],[1,0,1],[1,0,1]],[[0,0,0],[0,0,0],[0,1,0],[0,0,0],[0,0,0]],[[0,0,0],[0,0,0],[0,1,0],[0,0,0],[0,0,0]],[[0,0,0],[0,0,0],[0,1,0],[0,0,0],[0,0,0]]];
   var card = document.createElement("canvas");
   element.appendChild(card);
   var ctx = card.getContext("2d");
@@ -108,6 +108,11 @@ function renderCard(element,cardID) {
       var f = [drawClub,drawDiamond,drawHeart,drawSpade][cardID[0]];
       if ( selected[i][j] == 1 ) f(card.width * 0.25 * (j + 1),card.height * 0.18 * i + [5,4,5,3][cardID[0]],7,7.5);
     }
+  }
+  if ( cardNumber > 10 ) {
+    ctx.font = "100px Arial";
+    ctx.fillText(cardID[1],card.width * 0.1,card.height * 0.75);
+    ctx.fillText(cardID[1],card.width * 0.65,card.height * 0.75);
   }
 }
 
