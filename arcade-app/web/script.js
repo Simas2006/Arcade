@@ -133,14 +133,52 @@ function hit() {
   gameState.player.sum += Math.min(number == 1 ? 11 : number,11);
   if ( number == 1 ) gameState.player.aces++;
   if ( gameState.player.sum > 21 ) {
-    if ( gameState.player.aces > 0 ) gameState.player.sum -= 10;
-    else winner = 1;
+    if ( gameState.player.aces > 0 ) {
+      gameState.player.sum -= 10;
+      gameState.player.aces--;
+    } else {
+      winner = 1;
+    }
   }
   if ( gameState.player.sum == 21 ) {
     winner = 2;
   }
   document.getElementById("bj-player-info").innerText = `Player cards: (Total = ${gameState.player.sum}) ${["","LOSS","WIN"][winner]}`;
   document.getElementById("bj-dealer-info").innerText = `Dealer cards: (Total = ${gameState.dealer.sum}) ${["","WIN","LOSS"][winner]}`;
+}
+
+function stand() {
+  var interval = setInterval(function() {
+    if ( gameState.activeDeck.length <= 0 ) {
+      for ( var i = 1; i <= 13; i++ ) {
+        for ( var j = 0; j < 4; j++ ) {
+          gameState.activeDeck.push(["CDHS".split("")[j],i]);
+        }
+      }
+      gameState.activeDeck = shuffle(gameState.activeDeck);
+    }
+    var selected = gameState.activeDeck[0];
+    var number = selected[1];
+    gameState.activeDeck = gameState.activeDeck.slice(1);
+    renderCard(document.getElementById("bj-dealer-cards"),selected);
+    gameState.dealer.sum += Math.min(number == 1 ? 11 : number,11);
+    if ( number == 1 ) gameState.dealer.aces++;
+    if ( gameState.dealer.sum > 21 ) {
+      if ( gameState.dealer.aces > 0 ) {
+        gameState.dealer.sum -= 10;
+        gameState.dealer.aces--;
+      } else {
+        gameState.dealer.sum -= Math.min(number == 1 ? 11 : number,11);
+        if ( gameState.dealer.sum >= gameState.player.sum ) winner = 1;
+        else winner = 2;
+      }
+    }
+    if ( gameState.dealer.sum == 21 ) winner = 1;
+    if ( gameState.dealer.sum >= gameState.player.sum ) winner = 1;
+    if ( winner > 0 ) clearInterval(interval);
+    document.getElementById("bj-player-info").innerText = `Player cards: (Total = ${gameState.player.sum}) ${["","LOSS","WIN"][winner]}`;
+    document.getElementById("bj-dealer-info").innerText = `Dealer cards: (Total = ${gameState.dealer.sum}) ${["","WIN","LOSS"][winner]}`;
+  },1000);
 }
 
 function shuffle(a) {
