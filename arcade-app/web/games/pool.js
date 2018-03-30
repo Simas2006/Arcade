@@ -12,12 +12,21 @@ class Pool {
       cue: {
         a: 0,
         v: 0,
+        shootCount: 0,
+        shootReverse: false,
+        shooting: false,
+        setVelocity: 0,
+        rotationDirection: 0
       }
     }
   }
   init() {
     setInterval(function() {
       currentlyLoaded.render();
+      var direction = currentlyLoaded.gameState.cue.rotationDirection;
+      if ( direction != 0 ) {
+        currentlyLoaded.gameState.cue.a -= direction * 0.2;
+      }
     },10);
   }
   render() {
@@ -40,17 +49,40 @@ class Pool {
         var distance = Math.sqrt(xDist * xDist + yDist * yDist);
         if ( distance <= 60 ) {
           balls[i].a = balls[j].a;
-          balls[i].v = 5;
+          balls[i].v = balls[j].v * 0.8;
           balls[j].a += 90;
         }
       }
     }
     var ctx = canvas.getContext("2d");
+    var cueBounceLimit = 150;
     ctx.fillStyle = "green";
     ctx.fillRect(20,20,canvas.width - 80,canvas.height - 80);
     if ( balls.filter(item => item.v > 0).length == 0 ) {
-      var cueLength = 500;
-      var cueDistance = 100;
+      var shootCount = currentlyLoaded.gameState.cue.shootCount;
+      if ( shootCount > 0 || currentlyLoaded.gameState.cue.shooting ) {
+        currentlyLoaded.gameState.cue.rotationDirection = 0;
+        if ( currentlyLoaded.gameState.cue.shootReverse ) {
+          currentlyLoaded.gameState.cue.shootCount--;
+          if ( shootCount <= cueBounceLimit - 5 ) currentlyLoaded.gameState.cue.shootReverse = false;
+        } else {
+          currentlyLoaded.gameState.cue.shootCount++;
+          if ( shootCount >= cueBounceLimit + 5 ) currentlyLoaded.gameState.cue.shootReverse = true;
+        }
+        if ( currentlyLoaded.gameState.cue.shooting ) {
+          if ( shootCount > currentlyLoaded.gameState.cue.setVelocity ) currentlyLoaded.gameState.cue.setVelocity = shootCount;
+          currentlyLoaded.gameState.cue.shootCount -= 12;
+          if ( shootCount <= -80 ) {
+            currentlyLoaded.gameState.cue.shooting = false;
+            currentlyLoaded.gameState.cue.shootCount = 0;
+            currentlyLoaded.gameState.balls[15].a = 180 + currentlyLoaded.gameState.cue.a;
+            currentlyLoaded.gameState.balls[15].v = currentlyLoaded.gameState.cue.setVelocity * 0.125;
+            currentlyLoaded.gameState.cue.setVelocity = 0;
+          }
+        }
+      }
+      var cueLength = 500 + shootCount;
+      var cueDistance = 100 + shootCount;
       var cueAngle = currentlyLoaded.gameState.cue.a;
       ctx.lineWidth = "10";
       ctx.strokeStyle = "#824210";
