@@ -3,8 +3,8 @@ class Pool {
     this.gameState = {
       balls: "0".repeat(16).split("").map(function(item,index) {
         return {
-          x: 70,
-          y: 70 * (index % 15) + 70,
+          x: Math.floor(Math.random() * (window.innerWidth - 50)),
+          y: Math.floor(Math.random() * (window.innerHeight - 50)),
           a: Math.floor(Math.random() * 360),
           v: 0,
           shown: true,
@@ -26,6 +26,20 @@ class Pool {
         winner: 0,
         active: 1
       }
+    }
+    this.directionalAPI = {
+      x: {
+        positive: function() { currentlyLoaded.gameState.cue.direction = Math.sign(currentlyLoaded.gameState.cue.direction + 1) },
+        negative: function() { currentlyLoaded.gameState.cue.direction = Math.sign(currentlyLoaded.gameState.cue.direction - 1) },
+      },
+      z: {
+        positive: function() {
+          if ( currentlyLoaded.gameState.cue.shootCount > 1 ) currentlyLoaded.gameState.cue.shooting = true;
+          else currentlyLoaded.gameState.cue.shootCount = 1;
+        },
+        negative: Function.prototype
+      },
+      a: Function.prototype
     }
   }
   init() {
