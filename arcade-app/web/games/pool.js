@@ -3,8 +3,8 @@ class Pool {
     this.gameState = {
       balls: "0".repeat(16).split("").map(function(item,index) {
         return {
-          x: 70 * index + 70,
-          y: 100,
+          x: 70 * (index % 8) + 70,
+          y: 70 * Math.floor(index / 8) + 70,
           a: Math.floor(Math.random() * 360),
           v: 0
         }
@@ -57,7 +57,7 @@ class Pool {
     var ctx = canvas.getContext("2d");
     var cueBounceLimit = 150;
     ctx.fillStyle = "green";
-    ctx.fillRect(20,20,canvas.width - 80,canvas.height - 80);
+    ctx.fillRect(20,20,canvas.width - 40,canvas.height - 40);
     if ( balls.filter(item => item.v > 0).length == 0 ) {
       var shootCount = currentlyLoaded.gameState.cue.shootCount;
       if ( shootCount > 0 || currentlyLoaded.gameState.cue.shooting ) {
@@ -112,9 +112,35 @@ class Pool {
       }
     }
     ctx.fillStyle = "brown";
-    ctx.fillRect(0,0,20,canvas.height - 40);
-    ctx.fillRect(canvas.width - 60,0,20,canvas.height - 40);
-    ctx.fillRect(0,0,canvas.width - 40,20);
-    ctx.fillRect(0,canvas.height - 60,canvas.width - 40,20);
+    ctx.fillRect(0,0,20,canvas.height - 20);
+    ctx.fillRect(canvas.width - 20,0,20,canvas.height);
+    ctx.fillRect(0,0,canvas.width - 20,20);
+    ctx.fillRect(0,canvas.height - 20,canvas.width - 20,20);
+    var pocketRadius = 45;
+    ctx.fillStyle = "black";
+	  ctx.beginPath();
+  	ctx.arc(20,20,pocketRadius,0.5 * Math.PI,2 * Math.PI,false);
+  	ctx.lineTo(20,20);
+  	ctx.fill();
+    ctx.beginPath();
+  	ctx.arc(canvas.width - 20,20,pocketRadius,1 * Math.PI,0.5 * Math.PI,false);
+  	ctx.lineTo(canvas.width - 20,20);
+  	ctx.fill();
+    ctx.beginPath();
+  	ctx.arc(20,canvas.height - 20,pocketRadius,0 * Math.PI,1.5 * Math.PI,false);
+  	ctx.lineTo(20,canvas.height - 20);
+  	ctx.fill();
+    ctx.beginPath();
+  	ctx.arc(canvas.width - 20,canvas.height - 20,pocketRadius,1.5 * Math.PI,1 * Math.PI,false);
+  	ctx.lineTo(canvas.width - 20,canvas.height - 20);
+  	ctx.fill();
+    ctx.beginPath();
+  	ctx.arc(20,canvas.height / 2,pocketRadius,0.5 * Math.PI,1.5 * Math.PI,false);
+  	ctx.lineTo(20,canvas.height / 2);
+  	ctx.fill();
+    ctx.beginPath();
+  	ctx.arc(canvas.width - 20,canvas.height / 2,pocketRadius,1.5 * Math.PI,0.5 * Math.PI,false);
+  	ctx.lineTo(canvas.width - 20,canvas.height / 2);
+  	ctx.fill();
   }
 }
