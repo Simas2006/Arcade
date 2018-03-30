@@ -3,6 +3,7 @@ body {
   font-size: 120%;
 }
 #bj-game {
+  display: none;
   background-color: black;
   color: white;
 }
@@ -14,4 +15,9 @@ body {
   width: calc(16vh * 0.75);
   height: 16vh;
   padding: 5px;
+}
+#pool-game {
+  display: block;
+  width: 100vw;
+  height: 100vh;
 }

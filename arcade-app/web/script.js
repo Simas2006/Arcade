@@ -1,8 +1,9 @@
 var socket = io();
 var games = {
-  blackjack: new Blackjack()
+  blackjack: new Blackjack(),
+  pool: new Pool()
 }
-var currentlyLoaded = games.blackjack;
+var currentlyLoaded = games.pool;
 
 socket.on("directions",function(data) {
   data = JSON.parse(data);
@@ -15,3 +16,5 @@ socket.on("directions",function(data) {
   }
   if ( data.a < 0 ) currentlyLoaded.directionalAPI.a();
 });
+
+window.onload = currentlyLoaded.init;
