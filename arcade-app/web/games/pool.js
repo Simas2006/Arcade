@@ -72,8 +72,12 @@ class Pool {
               balls[15].v = 0;
               balls[15].shown = true;
             },1000);
-          } else if ( i == 8 ) {
-            currentlyLoaded.gameState.players.winner = currentlyLoaded.gameState.players.active == 1 ? 2 : 1;
+          } else if ( i == 7 ) {
+            if (
+              currentlyLoaded.gameState.players.active == 2 && currentlyLoaded.gameState.players.solid >= 7 ||
+              currentlyLoaded.gameState.players.active == 1 && currentlyLoaded.gameState.players.stripe >= 7
+            ) currentlyLoaded.gameState.players.winner = currentlyLoaded.gameState.players.active == 1 ? 2 : 1;
+            else currentlyLoaded.gameState.players.winner = currentlyLoaded.gameState.players.active;
           } else {
             currentlyLoaded.gameState.players.active = currentlyLoaded.gameState.players.active == 1 ? 2 : 1;
             if ( i <= 7 ) currentlyLoaded.gameState.players.solid++;
@@ -189,5 +193,14 @@ class Pool {
     ctx.arc(canvas.width / 2,canvas.height - 20,pocketRadius,0 * Math.PI,1 * Math.PI,false);
     ctx.lineTo(canvas.width / 2,canvas.height - 20);
     ctx.fill();
+    var winner = currentlyLoaded.gameState.players.winner;
+    if ( winner > 0 ) {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0,canvas.height / 2 - 40,canvas.width,50);
+      ctx.fillStyle = [null,"red","blue"][winner];
+      ctx.textAlign = "center";
+      ctx.font = "40px Arial";
+      ctx.fillText([null,"SOLID","STRIPE"][winner] + " WINS",canvas.width / 2,canvas.height / 2);
+    }
   }
 }
