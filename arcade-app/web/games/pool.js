@@ -14,11 +14,11 @@ class Pool {
       cue: {
         a: 0,
         v: 0,
+        direction: 0,
         shootCount: 0,
         shootReverse: false,
         shooting: false,
         setVelocity: 0,
-        rotationDirection: 0
       },
       players: {
         solid: 0,
@@ -31,9 +31,9 @@ class Pool {
   init() {
     setInterval(function() {
       currentlyLoaded.render();
-      var direction = currentlyLoaded.gameState.cue.rotationDirection;
-      if ( direction != 0 ) {
-        currentlyLoaded.gameState.cue.a -= direction * 0.2;
+      var direction = currentlyLoaded.gameState.cue.direction;
+      if ( direction != 0 && currentlyLoaded.gameState.cue.shootCount <=  0 ) {
+        currentlyLoaded.gameState.cue.a -= direction * -0.2;
       }
     },10);
   }
@@ -127,6 +127,7 @@ class Pool {
             currentlyLoaded.gameState.balls[15].a = 180 + currentlyLoaded.gameState.cue.a;
             currentlyLoaded.gameState.balls[15].v = currentlyLoaded.gameState.cue.setVelocity * 0.125;
             currentlyLoaded.gameState.cue.setVelocity = 0;
+            currentlyLoaded.gameState.cue.direction = 0;
             currentlyLoaded.gameState.players.active = currentlyLoaded.gameState.players.active == 1 ? 2 : 1;
           }
         }
