@@ -12,9 +12,9 @@ body {
   height: 46vh;
 }
 .bj-card-box > canvas {
+  padding: 5px;
   width: calc(16vh * 0.75);
   height: 16vh;
-  padding: 5px;
 }
 #pool-game {
   display: block;
