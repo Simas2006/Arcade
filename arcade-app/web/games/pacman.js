@@ -1,3 +1,5 @@
+var easystar = new EasyStar.js();
+
 class Pacman {
   constructor() {
     this.gameState = {
@@ -75,6 +77,26 @@ class Pacman {
       ctx.arc(unit * (ghost.x + 0.65),unit * (ghost.y + 0.4),3,0,2 * Math.PI);
       ctx.lineTo(unit * (ghost.x + 0.65),unit * (ghost.y + 0.4));
       ctx.fill();
+      if ( ghost.direction == 0 ) ghost.x += 0.033;
+      if ( ghost.direction == 1 ) ghost.y += 0.033;
+      if ( ghost.direction == 2 ) ghost.x -= 0.033;
+      if ( ghost.direction == 3 ) ghost.y -= 0.033;
+      if ( ghost.frame % 15 == 0 ) {
+        easystar.setGrid(map);
+        easystar.setAcceptableTiles([1,2,3,4]);
+        easystar.findPath(Math.round(ghost.x),Math.round(ghost.y),Math.round(pacman.x),Math.round(pacman.y),function(path) {
+          var nextSpace = path[1];
+          if ( ! nextSpace ) return;
+          var differences = [nextSpace.x - Math.round(ghost.x),nextSpace.y - Math.round(ghost.y)];
+          if ( differences[0] >= 1 ) ghost.direction = 0;
+          if ( differences[1] >= 1 ) ghost.direction = 1;
+          if ( differences[0] <= -1 ) ghost.direction = 2;
+          if ( differences[1] <= -1 ) ghost.direction = 3;
+        });
+        easystar.calculate();
+      }
+      ghost.frame++;
+      if ( ghost.frame >= 300 ) ghost.frame = 0;
     }
     var canvas = document.getElementById("pacman-canvas");
     canvas.width = window.innerWidth;
@@ -83,7 +105,7 @@ class Pacman {
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "black";
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    var unit = Math.min(canvas.width,canvas.height) / 19;
+    var unit = Math.min(canvas.width,canvas.height) / 21;
     for ( var i = 0; i < map.length; i++ ) {
       for ( var j = 0; j < map[0].length; j++ ) {
         if ( map[i][j] == 0 || map[i][j] == 4 ) {
@@ -103,10 +125,16 @@ class Pacman {
     ctx.arc(unit * (pacman.x + 0.5),unit * (pacman.y + 0.5),unit * 0.45,((pacman.frame >= 50 ? 50 - (pacman.frame - 50) : pacman.frame) * 0.006 + pacman.direction * 0.5) * Math.PI,(2 - (pacman.frame >= 50 ? 50 - (pacman.frame - 50) : pacman.frame) * 0.006 + pacman.direction * 0.5) * Math.PI);
     ctx.lineTo(unit * (pacman.x + 0.5),unit * (pacman.y + 0.5));
     ctx.fill();
-    if ( pacman.direction == 0 && map[Math.round(pacman.y)][Math.round(pacman.x - 0.45) + 1] != 0 && map[Math.round(pacman.y)][Math.round(pacman.x - 0.45) + 1] != 4 ) pacman.x += 0.05;
-    if ( pacman.direction == 1 && map[Math.round(pacman.y - 0.45) + 1][Math.round(pacman.x)] != 0 && map[Math.round(pacman.y - 0.45) + 1][Math.round(pacman.x)] != 4 ) pacman.y += 0.05;
-    if ( pacman.direction == 2 && map[Math.round(pacman.y)][Math.round(pacman.x + 0.45) - 1] != 0 && map[Math.round(pacman.y)][Math.round(pacman.x + 0.45) - 1] != 4 ) pacman.x -= 0.05;
-    if ( pacman.direction == 3 && map[Math.round(pacman.y + 0.45) - 1][Math.round(pacman.x)] != 0 && map[Math.round(pacman.y + 0.45) - 1][Math.round(pacman.x)] != 4 ) pacman.y -= 0.05;
+    var directions = [
+      map[Math.round(pacman.y)][Math.round(pacman.x - 0.45) + 1],
+      map[Math.round(pacman.y - 0.45) + 1][Math.round(pacman.x)],
+      map[Math.round(pacman.y)][Math.round(pacman.x + 0.45) - 1],
+      map[Math.round(pacman.y + 0.45) - 1][Math.round(pacman.x)]
+    ];
+    if ( pacman.direction == 0 && directions[0] != 0 && directions[0] != 4 ) pacman.x += 0.05;
+    if ( pacman.direction == 1 && directions[1] != 0 && directions[1] != 4 ) pacman.y += 0.05;
+    if ( pacman.direction == 2 && directions[2] != 0 && directions[2] != 4 ) pacman.x -= 0.05;
+    if ( pacman.direction == 3 && directions[3] != 0 && directions[3] != 4 ) pacman.y -= 0.05;
     if ( map[Math.round(pacman.y)][Math.round(pacman.x)] == 1 ) map[Math.round(pacman.y)][Math.round(pacman.x)] = 3;
     pacman.frame++;
     if ( pacman.frame >= 100 ) pacman.frame = 0;
