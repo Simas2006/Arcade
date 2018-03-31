@@ -3,15 +3,36 @@ class Pacman {
     this.gameState = {
       objects: "0".repeat(5).split("").map(function(item,index) {
         return {
-          x: index + 1,
-          y: 1,
+          x: [9,8,9,9,10][index],
+          y: [15,9,7,9,9][index],
           frame: 0,
           direction: 0,
           state: 0,
         }
       }),
       level: 1,
-      lives: 0
+      lives: 0,
+      map: `0000000000000000000
+0111111110111111110
+0200100010100010020
+0111111110111111110
+0100101000001010010
+0111101110111011110
+0000100030300010000
+3330103333333010333
+0000103004003010000
+3333133033303313333
+0000103000003010000
+3330103333333010333
+0000100030300010000
+0111111110111111110
+0100100010100010010
+0210111111111110120
+0010101000001010100
+0111101110111011110
+0100000010100000010
+0111111111111111110
+0000000000000000000`.split("\n").map(item => item.split("").map(jtem => parseInt(jtem)))
     }
   }
   init() {
@@ -55,30 +76,10 @@ class Pacman {
       ctx.lineTo(unit * (ghost.x + 0.65),unit * (ghost.y + 0.4));
       ctx.fill();
     }
-    var map = `0000000000000000000
-0111111110111111110
-0200100010100010020
-0111111110111111110
-0100101000001010010
-0111101110111011110
-0000100030300010000
-3330103333333010333
-0000103004003010000
-3333133033303313333
-0000103000003010000
-3330103333333010333
-0000100030300010000
-0111111110111111110
-0100100010100010010
-0210111111111110120
-0010101000001010100
-0111101110111011110
-0100000010100000010
-0111111111111111110
-0000000000000000000`.split("\n").map(item => item.split(""));
     var canvas = document.getElementById("pacman-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    var map = currentlyLoaded.gameState.map;
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "black";
     ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -102,6 +103,11 @@ class Pacman {
     ctx.arc(unit * (pacman.x + 0.5),unit * (pacman.y + 0.5),unit * 0.45,((pacman.frame >= 50 ? 50 - (pacman.frame - 50) : pacman.frame) * 0.006 + pacman.direction * 0.5) * Math.PI,(2 - (pacman.frame >= 50 ? 50 - (pacman.frame - 50) : pacman.frame) * 0.006 + pacman.direction * 0.5) * Math.PI);
     ctx.lineTo(unit * (pacman.x + 0.5),unit * (pacman.y + 0.5));
     ctx.fill();
+    if ( pacman.direction == 0 && map[Math.round(pacman.y)][Math.round(pacman.x - 0.45) + 1] != 0 && map[Math.round(pacman.y)][Math.round(pacman.x - 0.45) + 1] != 4 ) pacman.x += 0.05;
+    if ( pacman.direction == 1 && map[Math.round(pacman.y - 0.45) + 1][Math.round(pacman.x)] != 0 && map[Math.round(pacman.y - 0.45) + 1][Math.round(pacman.x)] != 4 ) pacman.y += 0.05;
+    if ( pacman.direction == 2 && map[Math.round(pacman.y)][Math.round(pacman.x + 0.45) - 1] != 0 && map[Math.round(pacman.y)][Math.round(pacman.x + 0.45) - 1] != 4 ) pacman.x -= 0.05;
+    if ( pacman.direction == 3 && map[Math.round(pacman.y + 0.45) - 1][Math.round(pacman.x)] != 0 && map[Math.round(pacman.y + 0.45) - 1][Math.round(pacman.x)] != 4 ) pacman.y -= 0.05;
+    if ( map[Math.round(pacman.y)][Math.round(pacman.x)] == 1 ) map[Math.round(pacman.y)][Math.round(pacman.x)] = 3;
     pacman.frame++;
     if ( pacman.frame >= 100 ) pacman.frame = 0;
     renderGhost(1);
