@@ -1,9 +1,10 @@
 var socket = io();
 var games = {
   blackjack: new Blackjack(),
-  pool: new Pool()
+  pool: new Pool(),
+  pacman: new Pacman()
 }
-var currentlyLoaded = games.pool;
+var currentlyLoaded = games.pacman;
 
 socket.on("directions",function(data) {
   data = JSON.parse(data);

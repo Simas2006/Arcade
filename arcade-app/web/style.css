@@ -7,6 +7,9 @@ body {
   background-color: black;
   color: white;
 }
+#pool-game {
+  display: none !important;
+}
 .bj-card-box {
   border: 1px solid white;
   height: 46vh;
@@ -16,7 +19,7 @@ body {
   width: calc(16vh * 0.75);
   height: 16vh;
 }
-#pool-game {
+#pool-game,#pacman-game {
   display: block;
   width: 100vw;
   height: 100vh;
