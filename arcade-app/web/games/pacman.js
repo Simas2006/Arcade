@@ -5,7 +5,9 @@ class Pacman {
         return {
           x: index + 1,
           y: 1,
-          frame: 0
+          frame: 0,
+          direction: 0,
+          state: 0,
         }
       }),
       level: 1,
@@ -18,6 +20,41 @@ class Pacman {
     },10);
   }
   render() {
+    function renderGhost(index) {
+      var ghost = currentlyLoaded.gameState.objects[index];
+      ctx.fillStyle = [null,"orange","red","pink","lightblue"][index];
+      ctx.beginPath();
+      ctx.arc(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5),unit * 0.45,1 * Math.PI,2 * Math.PI);
+      ctx.lineTo(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5));
+      ctx.fill();
+      ctx.fillRect(unit * ghost.x + 1,unit * (ghost.y + 0.5) - 1,unit - 2,unit * 0.25);
+      ctx.moveTo(unit * ghost.x,unit * (ghost.y + 0.7));
+      ctx.lineTo(unit * (ghost.x + 0.16),unit * (ghost.y + 1));
+      ctx.lineTo(unit * (ghost.x + 0.33),unit * (ghost.y + 0.7));
+      ctx.lineTo(unit * (ghost.x + 0.50),unit * (ghost.y + 1));
+      ctx.lineTo(unit * (ghost.x + 0.66),unit * (ghost.y + 0.7));
+      ctx.lineTo(unit * (ghost.x + 0.82),unit * (ghost.y + 1));
+      ctx.lineTo(unit * (ghost.x + 1),unit * (ghost.y + 0.7));
+      ctx.fill();
+      ctx.fillStyle = "white";
+      ctx.beginPath();
+      ctx.arc(unit * (ghost.x + 0.35),unit * (ghost.y + 0.4),7,0,2 * Math.PI);
+      ctx.lineTo(unit * (ghost.x + 0.35),unit * (ghost.y + 0.4));
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(unit * (ghost.x + 0.65),unit * (ghost.y + 0.4),7,0,2 * Math.PI);
+      ctx.lineTo(unit * (ghost.x + 0.65),unit * (ghost.y + 0.4));
+      ctx.fill();
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(unit * (ghost.x + 0.35),unit * (ghost.y + 0.4),3,0,2 * Math.PI);
+      ctx.lineTo(unit * (ghost.x + 0.35),unit * (ghost.y + 0.4));
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(unit * (ghost.x + 0.65),unit * (ghost.y + 0.4),3,0,2 * Math.PI);
+      ctx.lineTo(unit * (ghost.x + 0.65),unit * (ghost.y + 0.4));
+      ctx.fill();
+    }
     var map = `0000000000000000000
 0111111110111111110
 0200100010100010020
@@ -59,5 +96,17 @@ class Pacman {
         }
       }
     }
+    ctx.fillStyle = "gold";
+    var pacman = currentlyLoaded.gameState.objects[0];
+    ctx.beginPath();
+    ctx.arc(unit * (pacman.x + 0.5),unit * (pacman.y + 0.5),unit * 0.45,((pacman.frame >= 50 ? 50 - (pacman.frame - 50) : pacman.frame) * 0.006 + pacman.direction * 0.5) * Math.PI,(2 - (pacman.frame >= 50 ? 50 - (pacman.frame - 50) : pacman.frame) * 0.006 + pacman.direction * 0.5) * Math.PI);
+    ctx.lineTo(unit * (pacman.x + 0.5),unit * (pacman.y + 0.5));
+    ctx.fill();
+    pacman.frame++;
+    if ( pacman.frame >= 100 ) pacman.frame = 0;
+    renderGhost(1);
+    renderGhost(2);
+    renderGhost(3);
+    renderGhost(4);
   }
 }
