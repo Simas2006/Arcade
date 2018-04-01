@@ -5,8 +5,8 @@ class Pacman {
     this.gameState = {
       objects: "0".repeat(5).split("").map(function(item,index) {
         return {
-          x: [10,8,9,9,10][index],
-          y: [18,9,7,9,9][index],
+          x: [9,8,9,9,10][index],
+          y: [15,9,7,9,9][index],
           frame: 0,
           direction: 0,
           state: 0
@@ -15,8 +15,7 @@ class Pacman {
       player: {
         level: 1,
         lives: 0,
-        levelupTime: 0,
-        pelletTime: 0
+        modeTimer: 0
       },
       map: `0000000000000000000
 0111111110111111110
@@ -106,9 +105,12 @@ class Pacman {
           var dx = Math.round(ghost.x) - Math.round(pacman.x);
           var dy = Math.round(ghost.y) - Math.round(pacman.y);
           var distance = Math.sqrt(dx * dx + dy * dy);
-          if ( distance < 4 ) ghost.state = 1;
+          if ( distance < 8 ) ghost.state = 1;
         }
-        if ( ghost.state == 1 ) chasePosition = [1,map.length - 2]; // temporary for ghost 4
+        if ( ghost.state == 1 ) chasePosition = [
+          [null,1,map[0].length - 2,map[0].length - 2,1][index],
+          [null,1,1,map.length - 2,map.length - 2][index]
+        ];
         if ( chasePosition[0] < 1 ) chasePosition[0] = 1;
         if ( chasePosition[1] > map.length - 2 ) chasePosition[1] = map.length - 2;
         if ( chasePosition[0] > map[0].length - 2 ) chasePosition[0] = map[0].length - 2;
@@ -126,6 +128,10 @@ class Pacman {
         easystar.setGrid(map);
         easystar.setAcceptableTiles([1,2,3,4,5]);
         easystar.findPath(Math.round(ghost.x),Math.round(ghost.y),Math.round(chasePosition[0]),Math.round(chasePosition[1]),function(path) {
+          if ( ! path ) {
+            ghost.direction = -1;
+            return;
+          }
           var nextSpace = path[1];
           if ( ! nextSpace ) return;
           var differences = [nextSpace.x - Math.round(ghost.x),nextSpace.y - Math.round(ghost.y)];
@@ -183,5 +189,13 @@ class Pacman {
     renderGhost(2);
     renderGhost(3);
     renderGhost(4);
+    var timer = currentlyLoaded.gameState.player.modeTimer;
+    if ( timer % 2000 == 0 && timer <= 6000 ) {
+      currentlyLoaded.gameState.objects[1].state = 1;
+      currentlyLoaded.gameState.objects[2].state = 1;
+      currentlyLoaded.gameState.objects[3].state = 1;
+      currentlyLoaded.gameState.objects[4].state = 1;
+    }
+    currentlyLoaded.gameState.player.modeTimer++;
   }
 }
