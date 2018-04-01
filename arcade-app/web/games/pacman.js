@@ -5,15 +5,19 @@ class Pacman {
     this.gameState = {
       objects: "0".repeat(5).split("").map(function(item,index) {
         return {
-          x: [9,8,9,9,10][index],
-          y: [15,9,7,9,9][index],
+          x: [10,8,9,9,10][index],
+          y: [18,9,7,9,9][index],
           frame: 0,
           direction: 0,
-          state: 0,
+          state: 0
         }
       }),
-      level: 1,
-      lives: 0,
+      player: {
+        level: 1,
+        lives: 0,
+        levelupTime: 0,
+        pelletTime: 0
+      },
       map: `0000000000000000000
 0111111110111111110
 0200100010100010020
@@ -45,7 +49,7 @@ class Pacman {
   render() {
     function renderGhost(index) {
       var ghost = currentlyLoaded.gameState.objects[index];
-      ctx.fillStyle = [null,"orange","red","pink","lightblue"][index];
+      ctx.fillStyle = [null,"red","pink","lightblue","orange"][index];
       ctx.beginPath();
       ctx.arc(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5),unit * 0.45,1 * Math.PI,2 * Math.PI);
       ctx.lineTo(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5));
@@ -81,10 +85,47 @@ class Pacman {
       if ( ghost.direction == 1 ) ghost.y += 0.033;
       if ( ghost.direction == 2 ) ghost.x -= 0.033;
       if ( ghost.direction == 3 ) ghost.y -= 0.033;
-      if ( ghost.frame % 15 == 0 ) {
+      if ( ghost.frame % 30 == 0 ) {
+        var chasePosition = [Math.round(pacman.x),Math.round(pacman.y)];
+        if ( index == 2 ) {
+          if ( pacman.direction == 0 ) chasePosition[0] += 2;
+          if ( pacman.direction == 1 ) chasePosition[1] += 2;
+          if ( pacman.direction == 2 ) chasePosition[0] -= 2;
+          if ( pacman.direction == 3 ) chasePosition[1] -= 2;
+        }
+        if ( index == 3 ) {
+          var dx = Math.round(currentlyLoaded.gameState.objects[1].x) - Math.round(pacman.x);
+          var dy = Math.round(currentlyLoaded.gameState.objects[1].y) - Math.round(pacman.y);
+          chasePosition = [Math.round(currentlyLoaded.gameState.objects[1].x + dx),Math.round(currentlyLoaded.gameState.objects[1].y + dy)];
+          if ( chasePosition[0] < 0 ) chasePosition[0] = 1;
+          if ( chasePosition[1] < 0 ) chasePosition[1] = 1;
+          if ( chasePosition[0] > map[0].length - 1 ) chasePosition[0] = map[0].length - 1;
+          if ( chasePosition[1] > map.length - 1 ) chasePosition[1] = map.length - 1;
+        }
+        if ( index == 4 ) {
+          var dx = Math.round(ghost.x) - Math.round(pacman.x);
+          var dy = Math.round(ghost.y) - Math.round(pacman.y);
+          var distance = Math.sqrt(dx * dx + dy * dy);
+          if ( distance < 4 ) ghost.state = 1;
+        }
+        if ( ghost.state == 1 ) chasePosition = [1,map.length - 2]; // temporary for ghost 4
+        if ( chasePosition[0] < 1 ) chasePosition[0] = 1;
+        if ( chasePosition[1] > map.length - 2 ) chasePosition[1] = map.length - 2;
+        if ( chasePosition[0] > map[0].length - 2 ) chasePosition[0] = map[0].length - 2;
+        if ( chasePosition[1] < 1 ) chasePosition[1] = 1;
+        if ( map[chasePosition[1]][chasePosition[0]] == 0 ) {
+          if ( map[chasePosition[1]][chasePosition[0] + 1] != 0 ) chasePosition[0]++;
+          else if ( map[chasePosition[1] + 1][chasePosition[0]] != 0 ) chasePosition[1]++;
+          else if ( map[chasePosition[1]][chasePosition[0] - 1] != 0 ) chasePosition[0]--;
+          else if ( map[chasePosition[1] - 1][chasePosition[0]] != 0 ) chasePosition[1]--;
+        }
+        if ( Math.round(ghost.y) == chasePosition[1] && Math.round(ghost.x) == chasePosition[0] ) {
+          ghost.direction = -1;
+          if ( ghost.state == 1 ) ghost.state = 0;
+        }
         easystar.setGrid(map);
-        easystar.setAcceptableTiles([1,2,3,4]);
-        easystar.findPath(Math.round(ghost.x),Math.round(ghost.y),Math.round(pacman.x),Math.round(pacman.y),function(path) {
+        easystar.setAcceptableTiles([1,2,3,4,5]);
+        easystar.findPath(Math.round(ghost.x),Math.round(ghost.y),Math.round(chasePosition[0]),Math.round(chasePosition[1]),function(path) {
           var nextSpace = path[1];
           if ( ! nextSpace ) return;
           var differences = [nextSpace.x - Math.round(ghost.x),nextSpace.y - Math.round(ghost.y)];
