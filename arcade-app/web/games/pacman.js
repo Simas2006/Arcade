@@ -51,19 +51,21 @@ class Pacman {
       var ghost = currentlyLoaded.gameState.objects[index];
       ctx.fillStyle = [null,"red","pink","lightblue","orange"][index];
       if ( ghost.state == 2 ) ctx.fillStyle = "blue";
-      ctx.beginPath();
-      ctx.arc(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5),unit * 0.45,1 * Math.PI,2 * Math.PI);
-      ctx.lineTo(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5));
-      ctx.fill();
-      ctx.fillRect(unit * ghost.x + 1,unit * (ghost.y + 0.5) - 1,unit - 2,unit * 0.25);
-      ctx.moveTo(unit * ghost.x,unit * (ghost.y + 0.7));
-      ctx.lineTo(unit * (ghost.x + 0.16),unit * (ghost.y + 1));
-      ctx.lineTo(unit * (ghost.x + 0.33),unit * (ghost.y + 0.7));
-      ctx.lineTo(unit * (ghost.x + 0.50),unit * (ghost.y + 1));
-      ctx.lineTo(unit * (ghost.x + 0.66),unit * (ghost.y + 0.7));
-      ctx.lineTo(unit * (ghost.x + 0.82),unit * (ghost.y + 1));
-      ctx.lineTo(unit * (ghost.x + 1),unit * (ghost.y + 0.7));
-      ctx.fill();
+      if ( ghost.state != 3 ) {
+        ctx.beginPath();
+        ctx.arc(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5),unit * 0.45,1 * Math.PI,2 * Math.PI);
+        ctx.lineTo(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5));
+        ctx.fill();
+        ctx.fillRect(unit * ghost.x + 1,unit * (ghost.y + 0.5) - 1,unit - 2,unit * 0.25);
+        ctx.moveTo(unit * ghost.x,unit * (ghost.y + 0.7));
+        ctx.lineTo(unit * (ghost.x + 0.16),unit * (ghost.y + 1));
+        ctx.lineTo(unit * (ghost.x + 0.33),unit * (ghost.y + 0.7));
+        ctx.lineTo(unit * (ghost.x + 0.50),unit * (ghost.y + 1));
+        ctx.lineTo(unit * (ghost.x + 0.66),unit * (ghost.y + 0.7));
+        ctx.lineTo(unit * (ghost.x + 0.82),unit * (ghost.y + 1));
+        ctx.lineTo(unit * (ghost.x + 1),unit * (ghost.y + 0.7));
+        ctx.fill();
+      }
       ctx.fillStyle = "white";
       ctx.beginPath();
       ctx.arc(unit * (ghost.x + 0.35),unit * (ghost.y + 0.4),7,0,2 * Math.PI);
@@ -116,6 +118,7 @@ class Pacman {
           [null,1,1,map.length - 2,map.length - 2][index]
         ];
         if ( ghost.state == 2 ) chasePosition = ghost.selectedPosition;
+        if ( ghost.state == 3 ) chasePosition = [9,9];
         if ( chasePosition[0] < 1 ) chasePosition[0] = 1;
         if ( chasePosition[1] > map.length - 2 ) chasePosition[1] = map.length - 2;
         if ( chasePosition[0] > map[0].length - 2 ) chasePosition[0] = map[0].length - 2;
@@ -140,6 +143,9 @@ class Pacman {
           var nextSpace = path[1];
           if ( ! nextSpace ) {
             if ( ghost.state == 2 ) ghost.selectedPosition = [Math.floor(Math.random() * 19),Math.floor(Math.random() * 21)];
+            if ( ghost.state == 3 ) setTimeout(function() {
+              ghost.state = 0;
+            },1000);
             return;
           }
           var differences = [nextSpace.x - Math.round(ghost.x),nextSpace.y - Math.round(ghost.y)];
@@ -149,6 +155,9 @@ class Pacman {
           if ( differences[1] <= -1 ) ghost.direction = 3;
         });
         easystar.calculate();
+      }
+      if ( Math.round(pacman.x) == Math.round(ghost.x) && Math.round(pacman.y) == Math.round(ghost.y) ) {
+        if ( ghost.state == 2 ) ghost.state = 3;
       }
       ghost.frame++;
       if ( ghost.frame >= 300 ) ghost.frame = 0;
@@ -197,7 +206,6 @@ class Pacman {
       currentlyLoaded.gameState.objects[3].state = 2;
       currentlyLoaded.gameState.objects[4].state = 2;
       map[Math.round(pacman.y)][Math.round(pacman.x)] = 3;
-
     }
     pacman.frame++;
     if ( pacman.frame >= 100 ) pacman.frame = 0;
