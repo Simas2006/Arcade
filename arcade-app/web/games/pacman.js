@@ -5,11 +5,12 @@ class Pacman {
     this.gameState = {
       objects: "0".repeat(5).split("").map(function(item,index) {
         return {
-          x: [9,8,9,9,10][index],
+          x: [16,8,9,9,10][index],
           y: [15,9,7,9,9][index],
           frame: 0,
-          direction: 0,
-          state: 0
+          direction: 2,
+          state: 0,
+          selectedPosition: [Math.floor(Math.random() * 19),Math.floor(Math.random() * 21)]
         }
       }),
       player: {
@@ -49,6 +50,7 @@ class Pacman {
     function renderGhost(index) {
       var ghost = currentlyLoaded.gameState.objects[index];
       ctx.fillStyle = [null,"red","pink","lightblue","orange"][index];
+      if ( ghost.state == 2 ) ctx.fillStyle = "blue";
       ctx.beginPath();
       ctx.arc(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5),unit * 0.45,1 * Math.PI,2 * Math.PI);
       ctx.lineTo(unit * (ghost.x + 0.5),unit * (ghost.y + 0.5));
@@ -86,31 +88,34 @@ class Pacman {
       if ( ghost.direction == 3 ) ghost.y -= 0.033;
       if ( ghost.frame % 30 == 0 ) {
         var chasePosition = [Math.round(pacman.x),Math.round(pacman.y)];
-        if ( index == 2 ) {
-          if ( pacman.direction == 0 ) chasePosition[0] += 2;
-          if ( pacman.direction == 1 ) chasePosition[1] += 2;
-          if ( pacman.direction == 2 ) chasePosition[0] -= 2;
-          if ( pacman.direction == 3 ) chasePosition[1] -= 2;
-        }
-        if ( index == 3 ) {
-          var dx = Math.round(currentlyLoaded.gameState.objects[1].x) - Math.round(pacman.x);
-          var dy = Math.round(currentlyLoaded.gameState.objects[1].y) - Math.round(pacman.y);
-          chasePosition = [Math.round(currentlyLoaded.gameState.objects[1].x + dx),Math.round(currentlyLoaded.gameState.objects[1].y + dy)];
-          if ( chasePosition[0] < 0 ) chasePosition[0] = 1;
-          if ( chasePosition[1] < 0 ) chasePosition[1] = 1;
-          if ( chasePosition[0] > map[0].length - 1 ) chasePosition[0] = map[0].length - 1;
-          if ( chasePosition[1] > map.length - 1 ) chasePosition[1] = map.length - 1;
-        }
-        if ( index == 4 ) {
-          var dx = Math.round(ghost.x) - Math.round(pacman.x);
-          var dy = Math.round(ghost.y) - Math.round(pacman.y);
-          var distance = Math.sqrt(dx * dx + dy * dy);
-          if ( distance < 8 ) ghost.state = 1;
+        if ( ghost.state < 2 ) {
+          if ( index == 2 ) {
+            if ( pacman.direction == 0 ) chasePosition[0] += 2;
+            if ( pacman.direction == 1 ) chasePosition[1] += 2;
+            if ( pacman.direction == 2 ) chasePosition[0] -= 2;
+            if ( pacman.direction == 3 ) chasePosition[1] -= 2;
+          }
+          if ( index == 3 ) {
+            var dx = Math.round(currentlyLoaded.gameState.objects[1].x) - Math.round(pacman.x);
+            var dy = Math.round(currentlyLoaded.gameState.objects[1].y) - Math.round(pacman.y);
+            chasePosition = [Math.round(currentlyLoaded.gameState.objects[1].x + dx),Math.round(currentlyLoaded.gameState.objects[1].y + dy)];
+            if ( chasePosition[0] < 0 ) chasePosition[0] = 1;
+            if ( chasePosition[1] < 0 ) chasePosition[1] = 1;
+            if ( chasePosition[0] > map[0].length - 1 ) chasePosition[0] = map[0].length - 1;
+            if ( chasePosition[1] > map.length - 1 ) chasePosition[1] = map.length - 1;
+          }
+          if ( index == 4 ) {
+            var dx = Math.round(ghost.x) - Math.round(pacman.x);
+            var dy = Math.round(ghost.y) - Math.round(pacman.y);
+            var distance = Math.sqrt(dx * dx + dy * dy);
+            if ( distance < 8 ) ghost.state = 1;
+          }
         }
         if ( ghost.state == 1 ) chasePosition = [
           [null,1,map[0].length - 2,map[0].length - 2,1][index],
           [null,1,1,map.length - 2,map.length - 2][index]
         ];
+        if ( ghost.state == 2 ) chasePosition = ghost.selectedPosition;
         if ( chasePosition[0] < 1 ) chasePosition[0] = 1;
         if ( chasePosition[1] > map.length - 2 ) chasePosition[1] = map.length - 2;
         if ( chasePosition[0] > map[0].length - 2 ) chasePosition[0] = map[0].length - 2;
@@ -126,14 +131,17 @@ class Pacman {
           if ( ghost.state == 1 ) ghost.state = 0;
         }
         easystar.setGrid(map);
-        easystar.setAcceptableTiles([1,2,3,4,5]);
+        easystar.setAcceptableTiles([1,2,3,4]);
         easystar.findPath(Math.round(ghost.x),Math.round(ghost.y),Math.round(chasePosition[0]),Math.round(chasePosition[1]),function(path) {
           if ( ! path ) {
             ghost.direction = -1;
             return;
           }
           var nextSpace = path[1];
-          if ( ! nextSpace ) return;
+          if ( ! nextSpace ) {
+            if ( ghost.state == 2 ) ghost.selectedPosition = [Math.floor(Math.random() * 19),Math.floor(Math.random() * 21)];
+            return;
+          }
           var differences = [nextSpace.x - Math.round(ghost.x),nextSpace.y - Math.round(ghost.y)];
           if ( differences[0] >= 1 ) ghost.direction = 0;
           if ( differences[1] >= 1 ) ghost.direction = 1;
@@ -183,6 +191,14 @@ class Pacman {
     if ( pacman.direction == 2 && directions[2] != 0 && directions[2] != 4 ) pacman.x -= 0.05;
     if ( pacman.direction == 3 && directions[3] != 0 && directions[3] != 4 ) pacman.y -= 0.05;
     if ( map[Math.round(pacman.y)][Math.round(pacman.x)] == 1 ) map[Math.round(pacman.y)][Math.round(pacman.x)] = 3;
+    if ( map[Math.round(pacman.y)][Math.round(pacman.x)] == 2 ) {
+      currentlyLoaded.gameState.objects[1].state = 2;
+      currentlyLoaded.gameState.objects[2].state = 2;
+      currentlyLoaded.gameState.objects[3].state = 2;
+      currentlyLoaded.gameState.objects[4].state = 2;
+      map[Math.round(pacman.y)][Math.round(pacman.x)] = 3;
+
+    }
     pacman.frame++;
     if ( pacman.frame >= 100 ) pacman.frame = 0;
     renderGhost(1);
