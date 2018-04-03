@@ -14,8 +14,8 @@ class Pacman {
         }
       }),
       player: {
-        level: 1,
-        lives: 0,
+        level: 0,
+        lives: 3,
         modeTimer: 0
       },
       map: `0000000000000000000
@@ -213,6 +213,39 @@ class Pacman {
     renderGhost(2);
     renderGhost(3);
     renderGhost(4);
+    ctx.fillStyle = "gold";
+    for ( var i = 0; i < currentlyLoaded.gameState.player.lives; i++ ) {
+      ctx.beginPath();
+      ctx.arc(unit * (i + 0.5),unit * (map.length + 1),unit * 0.45,0.25 * Math.PI,1.75 * Math.PI);
+      ctx.lineTo(unit * (i + 0.5),unit * (map.length + 1));
+      ctx.fill();
+    }
+    var icons = ["000000000011\n000000001111\n000000110100\n000001000100\n022100010000\n222120010000\n222220212000\n232202212200\n022202222200\n000002322200\n000000222000","00000100000\n002221222200\n033322221300\n313132333330\n333333131330\n331313333330\n033333331300\n0031313333000\n0003333130000\n0000313300000\n0000033000000","000001110000\n000011100000\n002201020000\n022222222000\n222222222200\n222222222200\n222222222200\n222222222200\n022222222000\n022222222000\n000222200000","000001100000\n000111111000\n000112111000\n001121111100\n001121111100\n001211111100\n001211111100\n011211111110\n012111111110\n013333333310\n013333333310","022220200000\n002222233000\n033332333300\n333333333330\n333333333330\n333333333330\n333333333330\n333333333330\n033333333300\n033333333300\n003300033000","001111111000\n000000010000\n002333333300\n023222322230\n333222322230\n322333333330\n322322232200\n323322232200\n032233332300\n032232233000\n003332200000","100002000010\n100022200010\n132222222310\n113323233110\n111333331110\n011133311100\n001113111000\n000103010000\n000003000000\n000003000000\n000003000000","000111110000\n001100011000\n001111111000\n000111110000\n000022000000\n000020200000\n000020220000\n000020200000\n000020220000\n000020200000\n000002000000"].map(item => item.split("\n").map(jtem => jtem.split("").map(ktem => parseInt(ktem))));
+    icons = icons.map(item => ["0".repeat(12).split("").map(jtem => 0)].concat(item));
+    icons = icons.map(item => item.map((jtem,i) => item.map(ktem => ktem[i])));
+    var palette = [
+      ["black","#dd9351","red","white"],
+      ["black","white","#00ff00","red"],
+      ["black","#00ff00","orange"],
+      ["black","yellow","white","#00ccff"],
+      ["black","white","#00ff00","red"],
+      ["black","#dd9351","#00ff00","green"],
+      ["black","blue","red","yellow"],
+      ["black","#00ccff","lightgray"]
+    ];
+    var indices = [0,1,2,2,3,3,4,4,5,5,6,6,7,7,7,7,7,7,7];
+    var level = currentlyLoaded.gameState.player.level;
+    var xcount = -1;
+    for ( var i = Math.max(Math.min(level,18) - 6,0); i <= Math.min(level,18); i++ ) {
+      xcount++;
+      var icon = icons[indices[i]];
+      for ( var j = 0; j < icon.length; j++ ) {
+        for ( var k = 0; k < icon[j].length; k++ ) {
+          ctx.fillStyle = palette[indices[i]][icon[j][k]];
+          ctx.fillRect(unit * (map[0].length - (xcount + 1) + j / 12),unit * (map.length + 0.5 + k / 12),unit / 12,unit / 12);
+        }
+      }
+    }
     var timer = currentlyLoaded.gameState.player.modeTimer;
     if ( timer % 2000 == 0 && timer <= 6000 ) {
       currentlyLoaded.gameState.objects[1].state = 1;
