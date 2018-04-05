@@ -5,10 +5,10 @@ class Pacman {
     this.gameState = {
       objects: "0".repeat(5).split("").map(function(item,index) {
         return {
-          x: [16,8,9,9,10][index],
-          y: [15,9,7,9,9][index],
+          x: [9,9,8,9,10][index],
+          y: [15,7,9,9,9][index],
           frame: 0,
-          direction: 2,
+          direction: 0,
           state: 0,
           selectedPosition: [Math.floor(Math.random() * 19),Math.floor(Math.random() * 21)]
         }
@@ -16,9 +16,10 @@ class Pacman {
       player: {
         level: 0,
         lives: 3,
+        coins: 0,
         modeTimer: 0
       },
-      map: `0000000000000000000
+      originalMap: `0000000000000000000
 0111111110111111110
 0200100010100010020
 0111111110111111110
@@ -38,10 +39,13 @@ class Pacman {
 0111101110111011110
 0100000010100000010
 0111111111111111110
-0000000000000000000`.split("\n").map(item => item.split("").map(jtem => parseInt(jtem)))
+0000000000000000000`.split("\n").map(item => item.split("").map(jtem => parseInt(jtem))),
+      map: null,
+      gameActive: true
     }
   }
   init() {
+    currentlyLoaded.gameState.map = currentlyLoaded.gameState.originalMap.map(item => [].concat(item));
     setInterval(function() {
       currentlyLoaded.render();
     },10);
@@ -88,7 +92,7 @@ class Pacman {
       if ( ghost.direction == 1 ) ghost.y += 0.033;
       if ( ghost.direction == 2 ) ghost.x -= 0.033;
       if ( ghost.direction == 3 ) ghost.y -= 0.033;
-      if ( ghost.frame % 30 == 0 ) {
+      if ( ghost.frame % 30 == 0 && pacman.state != 1 ) {
         var chasePosition = [Math.round(pacman.x),Math.round(pacman.y)];
         if ( ghost.state < 2 ) {
           if ( index == 2 ) {
@@ -157,7 +161,12 @@ class Pacman {
         easystar.calculate();
       }
       if ( Math.round(pacman.x) == Math.round(ghost.x) && Math.round(pacman.y) == Math.round(ghost.y) ) {
-        if ( ghost.state == 2 ) ghost.state = 3;
+        if ( ghost.state >= 2 ) {
+          ghost.state = 3;
+        } else {
+          pacman.state = 1;
+          currentlyLoaded.gameState.player.modeTimer = 0;
+        }
       }
       ghost.frame++;
       if ( ghost.frame >= 300 ) ghost.frame = 0;
@@ -189,30 +198,72 @@ class Pacman {
     ctx.arc(unit * (pacman.x + 0.5),unit * (pacman.y + 0.5),unit * 0.45,((pacman.frame >= 50 ? 50 - (pacman.frame - 50) : pacman.frame) * 0.006 + pacman.direction * 0.5) * Math.PI,(2 - (pacman.frame >= 50 ? 50 - (pacman.frame - 50) : pacman.frame) * 0.006 + pacman.direction * 0.5) * Math.PI);
     ctx.lineTo(unit * (pacman.x + 0.5),unit * (pacman.y + 0.5));
     ctx.fill();
-    var directions = [
-      map[Math.round(pacman.y)][Math.round(pacman.x - 0.45) + 1],
-      map[Math.round(pacman.y - 0.45) + 1][Math.round(pacman.x)],
-      map[Math.round(pacman.y)][Math.round(pacman.x + 0.45) - 1],
-      map[Math.round(pacman.y + 0.45) - 1][Math.round(pacman.x)]
-    ];
-    if ( pacman.direction == 0 && directions[0] != 0 && directions[0] != 4 ) pacman.x += 0.05;
-    if ( pacman.direction == 1 && directions[1] != 0 && directions[1] != 4 ) pacman.y += 0.05;
-    if ( pacman.direction == 2 && directions[2] != 0 && directions[2] != 4 ) pacman.x -= 0.05;
-    if ( pacman.direction == 3 && directions[3] != 0 && directions[3] != 4 ) pacman.y -= 0.05;
-    if ( map[Math.round(pacman.y)][Math.round(pacman.x)] == 1 ) map[Math.round(pacman.y)][Math.round(pacman.x)] = 3;
-    if ( map[Math.round(pacman.y)][Math.round(pacman.x)] == 2 ) {
-      currentlyLoaded.gameState.objects[1].state = 2;
-      currentlyLoaded.gameState.objects[2].state = 2;
-      currentlyLoaded.gameState.objects[3].state = 2;
-      currentlyLoaded.gameState.objects[4].state = 2;
-      map[Math.round(pacman.y)][Math.round(pacman.x)] = 3;
+    var timer = currentlyLoaded.gameState.player.modeTimer;
+    if ( (pacman.state == 0 || timer >= 150) && currentlyLoaded.gameState.gameActive ) {
+      var directions = [
+        map[Math.round(pacman.y)][Math.round(pacman.x - 0.45) + 1],
+        map[Math.round(pacman.y - 0.45) + 1][Math.round(pacman.x)],
+        map[Math.round(pacman.y)][Math.round(pacman.x + 0.45) - 1],
+        map[Math.round(pacman.y + 0.45) - 1][Math.round(pacman.x)]
+      ];
+      if ( pacman.direction == 0 && directions[0] != 0 && directions[0] != 4 ) pacman.x += 0.05;
+      if ( pacman.direction == 1 && directions[1] != 0 && directions[1] != 4 ) pacman.y += 0.05;
+      if ( pacman.direction == 2 && directions[2] != 0 && directions[2] != 4 ) pacman.x -= 0.05;
+      if ( pacman.direction == 3 && directions[3] != 0 && directions[3] != 4 ) pacman.y -= 0.05;
+      if ( map[Math.round(pacman.y)][Math.round(pacman.x)] == 1 ) map[Math.round(pacman.y)][Math.round(pacman.x)] = 3;
+      if ( map[Math.round(pacman.y)][Math.round(pacman.x)] == 2 ) {
+        currentlyLoaded.gameState.objects[1].state = 2;
+        currentlyLoaded.gameState.objects[2].state = 2;
+        currentlyLoaded.gameState.objects[3].state = 2;
+        currentlyLoaded.gameState.objects[4].state = 2;
+        map[Math.round(pacman.y)][Math.round(pacman.x)] = 3;
+      }
+      renderGhost(1);
+      renderGhost(2);
+      renderGhost(3);
+      renderGhost(4);
+    } else {
+      ctx.fillStyle = "black";
+      ctx.fillRect(unit * pacman.x,unit * pacman.y,unit,unit * Math.min(currentlyLoaded.gameState.player.modeTimer / 100,0.95));
+      if ( timer >= 149 ) {
+        currentlyLoaded.gameState.player.lives--;
+        currentlyLoaded.gameState.map = currentlyLoaded.gameState.originalMap.map(item => [].concat(item));
+        var xv = [9,8,9,9,10];
+        var yv = [15,9,7,9,9];
+        var objects = currentlyLoaded.gameState.objects;
+        for ( var i = 0; i < objects.length; i++ ) {
+          objects[i].x = xv[i];
+          objects[i].y = yv[i];
+          objects[i].direction = -1;
+        }
+      }
+    }
+    var lives = currentlyLoaded.gameState.player.lives;
+    if ( pacman.state == 1 && timer >= 300 ) {
+      if ( lives > 0 ) currentlyLoaded.gameState.player.modeTimer = 0;
+      pacman.state = 0;
+      pacman.direction = 0;
+      currentlyLoaded.gameState.objects[1].state = 1;
+      currentlyLoaded.gameState.objects[2].state = 1;
+      currentlyLoaded.gameState.objects[3].state = 1;
+      currentlyLoaded.gameState.objects[4].state = 1;
+    }
+    if ( (pacman.state == 1 && timer >= 150) || ! currentlyLoaded.gameState.gameActive ) {
+      if ( lives > 0 ) {
+        ctx.fillStyle = "yellow";
+        ctx.font = "20px Lucida Grande";
+        ctx.textAlign = "center";
+        ctx.fillText("READY?",unit * 9.5,unit * 4.5);
+      } else {
+        ctx.fillStyle = "red";
+        ctx.font = "40px Lucida Grande";
+        ctx.textAlign = "center";
+        ctx.fillText("GAME OVER",unit * 9.5,unit * 4.75);
+        currentlyLoaded.gameState.gameActive = false;
+      }
     }
     pacman.frame++;
     if ( pacman.frame >= 100 ) pacman.frame = 0;
-    renderGhost(1);
-    renderGhost(2);
-    renderGhost(3);
-    renderGhost(4);
     ctx.fillStyle = "gold";
     for ( var i = 0; i < currentlyLoaded.gameState.player.lives; i++ ) {
       ctx.beginPath();
@@ -246,7 +297,6 @@ class Pacman {
         }
       }
     }
-    var timer = currentlyLoaded.gameState.player.modeTimer;
     if ( timer % 2000 == 0 && timer <= 6000 ) {
       currentlyLoaded.gameState.objects[1].state = 1;
       currentlyLoaded.gameState.objects[2].state = 1;
