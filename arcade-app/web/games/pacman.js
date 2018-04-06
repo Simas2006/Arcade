@@ -45,6 +45,17 @@ class Pacman {
       map: null,
       gameActive: true
     }
+    this.directionalAPI = {
+      x: {
+        positive: function() { currentlyLoaded.gameState.nextDirection = 0 },
+        negative: function() { currentlyLoaded.gameState.nextDirection = 2 }
+      },
+      z: {
+        positive: function() { currentlyLoaded.gameState.nextDirection = 3 },
+        negative: function() { currentlyLoaded.gameState.nextDirection = 1 }
+      },
+      a: Function.prototype
+    }
   }
   init() {
     currentlyLoaded.gameState.player.killScreenArray = currentlyLoaded.shuffle(["red","orange","yellow","green","blue","purple","white"]);
