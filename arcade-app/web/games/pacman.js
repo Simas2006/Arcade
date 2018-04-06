@@ -5,19 +5,19 @@ class Pacman {
     this.gameState = {
       objects: "0".repeat(5).split("").map(function(item,index) {
         return {
-          x: [9,9,8,9,10][index],
-          y: [15,7,9,9,9][index],
+          x: 0,
+          y: 0,
           frame: 0,
           direction: 0,
-          state: 0,
+          state: index == 0 ? 1 : 0,
           selectedPosition: [Math.floor(Math.random() * 19),Math.floor(Math.random() * 21)]
         }
       }),
       player: {
         level: 0,
-        lives: 3,
+        lives: 4,
         coins: 0,
-        modeTimer: 0
+        modeTimer: 149
       },
       originalMap: `0000000000000000000
 0111111110111111110
@@ -234,8 +234,8 @@ class Pacman {
         if ( pacman.state == 1 ) currentlyLoaded.gameState.player.lives--;
         else if ( pacman.state == 2 ) currentlyLoaded.gameState.player.level++;
         currentlyLoaded.gameState.map = currentlyLoaded.gameState.originalMap.map(item => [].concat(item));
-        var xv = [9,8,9,9,10];
-        var yv = [15,9,7,9,9];
+        var xv = [9,9,8,9,10];
+        var yv = [15,7,9,9,9];
         var objects = currentlyLoaded.gameState.objects;
         for ( var i = 0; i < objects.length; i++ ) {
           objects[i].x = xv[i];
@@ -273,7 +273,6 @@ class Pacman {
       currentlyLoaded.gameState.player.coins = 0;
       currentlyLoaded.gameState.player.modeTimer = 0;
     }
-    i
     pacman.frame++;
     if ( pacman.frame >= 100 ) pacman.frame = 0;
     ctx.fillStyle = "gold";
