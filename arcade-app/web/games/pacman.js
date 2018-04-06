@@ -9,12 +9,13 @@ class Pacman {
           y: 0,
           frame: 0,
           direction: 0,
+          nextDirection: -1,
           state: index == 0 ? 1 : 0,
           selectedPosition: [Math.floor(Math.random() * 19),Math.floor(Math.random() * 21)]
         }
       }),
       player: {
-        level: 256,
+        level: 0,
         lives: 4,
         coins: 0,
         modeTimer: 149,
@@ -181,7 +182,7 @@ class Pacman {
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "black";
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    var unit = Math.min(canvas.width,canvas.height) / 21;
+    var unit = canvas.height / 23;
     for ( var i = 0; i < map.length; i++ ) {
       for ( var j = 0; j < map[0].length; j++ ) {
         if ( currentlyLoaded.gameState.player.level == 256 && j > 9 ) {
@@ -212,6 +213,22 @@ class Pacman {
         map[Math.round(pacman.y)][Math.round(pacman.x + 0.45) - 1],
         map[Math.round(pacman.y + 0.45) - 1][Math.round(pacman.x)]
       ];
+      if ( pacman.nextDirection == 0 && Math.floor((pacman.y - Math.floor(pacman.y)) * 10) == 0 && directions[0] != 0 && directions[0] != 4 ) {
+        pacman.direction = 0;
+        pacman.nextDirection = -1;
+      }
+      if ( pacman.nextDirection == 1 && Math.floor((pacman.x - Math.floor(pacman.x)) * 10) == 0 && directions[1] != 0 && directions[1] != 4 ) {
+        pacman.direction = 1;
+        pacman.nextDirection = -1;
+      }
+      if ( pacman.nextDirection == 2 && Math.floor((pacman.y - Math.floor(pacman.y)) * 10) == 0 && directions[2] != 0 && directions[2] != 4 ) {
+        pacman.direction = 2;
+        pacman.nextDirection = -1;
+      }
+      if ( pacman.nextDirection == 3 && Math.floor((pacman.x - Math.floor(pacman.x)) * 10) == 0 && directions[3] != 0 && directions[3] != 4 ) {
+        pacman.direction = 3;
+        pacman.nextDirection = -1;
+      }
       if ( pacman.direction == 0 && directions[0] != 0 && directions[0] != 4 ) pacman.x += 0.05;
       if ( pacman.direction == 1 && directions[1] != 0 && directions[1] != 4 ) pacman.y += 0.05;
       if ( pacman.direction == 2 && directions[2] != 0 && directions[2] != 4 ) pacman.x -= 0.05;
