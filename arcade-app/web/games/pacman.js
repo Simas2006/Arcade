@@ -14,10 +14,11 @@ class Pacman {
         }
       }),
       player: {
-        level: 0,
+        level: 256,
         lives: 4,
         coins: 0,
-        modeTimer: 149
+        modeTimer: 149,
+        killScreenArray: null
       },
       originalMap: `0000000000000000000
 0111111110111111110
@@ -45,6 +46,7 @@ class Pacman {
     }
   }
   init() {
+    currentlyLoaded.gameState.player.killScreenArray = currentlyLoaded.shuffle(["red","orange","yellow","green","blue","purple","white"]);
     currentlyLoaded.gameState.map = currentlyLoaded.gameState.originalMap.map(item => [].concat(item));
     setInterval(function() {
       currentlyLoaded.render();
@@ -182,7 +184,10 @@ class Pacman {
     var unit = Math.min(canvas.width,canvas.height) / 21;
     for ( var i = 0; i < map.length; i++ ) {
       for ( var j = 0; j < map[0].length; j++ ) {
-        if ( map[i][j] == 0 || map[i][j] == 4 ) {
+        if ( currentlyLoaded.gameState.player.level == 256 && j > 9 ) {
+          ctx.fillStyle = currentlyLoaded.gameState.player.killScreenArray[(i * 19 + j) % 7];
+          ctx.fillRect(unit * j,unit * i,unit,unit);
+        } else if ( map[i][j] == 0 || map[i][j] == 4 ) {
           ctx.fillStyle = ["#365fa7",null,null,null,"brown"][map[i][j]];
           ctx.fillRect(unit * j,unit * i,unit,unit);
         } else if ( map[i][j] == 1 || map[i][j] == 2 ) {
@@ -315,5 +320,14 @@ class Pacman {
       currentlyLoaded.gameState.objects[4].state = 1;
     }
     currentlyLoaded.gameState.player.modeTimer++;
+  }
+  shuffle(a) {
+    for ( var i = a.length - 1; i > 0; i-- ) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var x = a[i];
+      a[i] = a[j];
+      a[j] = x;
+    }
+    return a;
   }
 }
