@@ -9,7 +9,7 @@ class PingPong {
           shooting: 0
         },
         {
-          x: 400,
+          x: 200,
           v: 100,
           saveV: 0,
           shooting: 0
@@ -61,5 +61,39 @@ class PingPong {
       else ball.g = 1;
     }
     if ( ball.g >= ball.v * 1.5 ) ball.goingUp = false;
+    if ( paddles[0].shooting > 0 ) {
+      if ( paddles[0].shooting == 1 ) {
+        paddles[0].saveV = paddles[0].v;
+        paddles[0].shooting = 2;
+      }
+      paddles[0].v = Math.max(paddles[0].v - 5,0);
+      if ( paddles[0].v == 0 ) {
+        paddles[0].saveV = 0;
+        if ( paddles[1].saveV == 0 ) paddles[1].shooting = false;
+      }
+    }
+    if ( paddles[1].shooting > 0 ) {
+      if ( paddles[1].shooting == 1 ) {
+        paddles[1].saveV = paddles[0].v;
+        paddles[1].shooting = 2;
+      }
+      paddles[1].v = Math.max(paddles[1].v - 5,0);
+      if ( paddles[1].v == 0 ) {
+        paddles[1].saveV--;
+        if ( paddles[1].saveV == 0 ) paddles[1].shooting = false;
+      }
+    }
+    if ( ball.x >= paddles[0].x - 100 && ball.x <= paddles[0].x + 100 && ball.y <= canvas.height * (0.07 * ((100 - paddles[0].v) / 100) + 0.05) ) {
+      var result = ball.a + 180;
+      if ( result >= 360 ) result -= 360;
+      if ( result <= 180 ) ball.a = result;
+      ball.v = Math.min(ball.v + paddles[0].saveV,100);
+    }
+    if ( ball.x >= paddles[1].x - 100 && ball.x <= paddles[1].x + 100 && ball.y >= canvas.height * (1 - 0.15 * ((100 - paddles[1].v) / 100) - 0.05) ) {
+      var result = ball.a + 180;
+      if ( result >= 360 ) result -= 360;
+      if ( result > 180 ) ball.a = result;
+      ball.v = Math.min(ball.v + paddles[1].saveV,100);
+    }
   }
 }
