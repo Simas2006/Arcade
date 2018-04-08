@@ -16,10 +16,10 @@ class PingPong {
         }
       ],
       ball: {
-        x: 100,
-        y: 200,
+        x: 0,
+        y: 50,
         g: 100,
-        a: 70,
+        a: 45,
         v: 100,
         goingUp: false,
         direction: 0,
@@ -142,6 +142,10 @@ class PingPong {
           ball.preparing = false;
         },1500);
       },1000);
+    }
+    if ( ball.x <= 0 || ball.x >= canvas.width ) {
+      if ( ball.a > 180 ) ball.a += 90;
+      else ball.a -= 90;
     }
   }
 }
