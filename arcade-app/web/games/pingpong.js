@@ -101,35 +101,43 @@ class PingPong {
         if ( paddles[1].saveV <= 0 ) paddles[1].shooting = 0;
       }
     }
-    if ( ball.x >= paddles[0].x - 100 && ball.x <= paddles[0].x + 100 && ball.y <= canvas.height * (0.15 * ((100 - paddles[0].v) / 100) + 0.05) && ! ball.preparing ) {
+    if ( ball.x >= paddles[0].x - 100 && ball.x <= paddles[0].x + 100 && ball.y <= canvas.height * (0.15 * ((100 - paddles[0].v) / 100) + 0.05) && ! ball.preparing && ! ball.hasBounced ) {
       ball.a = -ball.a;
       ball.v = Math.min(ball.v + paddles[0].saveV,100);
-      ball.direction = 0;
+      ball.hasBounced = true;
     }
-    if ( ball.x >= paddles[1].x - 100 && ball.x <= paddles[1].x + 100 && ball.y >= canvas.height * (1 - 0.15 * ((100 - paddles[1].v) / 100) - 0.05) && ! ball.preparing && ball.direction == 0 ) {
+    if ( ball.x >= paddles[1].x - 100 && ball.x <= paddles[1].x + 100 && ball.y >= canvas.height * (1 - 0.15 * ((100 - paddles[1].v) / 100) - 0.05) && ! ball.preparing && ! ball.hasBounced ) {
       ball.a = -ball.a;
       ball.v = Math.min(ball.v + paddles[1].saveV,100);
-      ball.direction = 1;
+      ball.hasBounced = true;
     }
-    if ( ball.y >= canvas.height / 2 - 10 && ball.y <= canvas.height / 2 + 10 && ball.g <= 20 && ! ball.preparing ) {
-      ball.a += 180;
-      ball.v *= 0.75;
-      currentlyLoaded.gameState.scores[ball.direction == 0 ? 1 : 0]++;
-      ball.preparing = true;
-      setTimeout(function() {
-        ball.g = 100;
-        ball.v = 0;
-        ball.x = canvas.width / 2;
-        ball.y = canvas.height / 2;
+    if ( ball.y >= canvas.height / 2 - 10 && ball.y <= canvas.height / 2 + 10 ) {
+      ball.hasBounced = false;
+      if ( ball.g <= 20 && ! ball.preparing ) {
+        if ( ball.y < canvas.height ) var winner = 1;
+        else var winner = 0;
+        currentlyLoaded.gameState.scores[winner]++;
+        ball.a += 180;
+        ball.v *= 0.75;
+        ball.preparing = true;
         setTimeout(function() {
-          ball.v = 70;
-          ball.a = [270,90][ball.direction];
-          ball.preparing = false;
-        },1500);
-      },2000);
+          ball.g = 100;
+          ball.v = 0;
+          ball.x = canvas.width / 2;
+          ball.y = canvas.height / 2;
+          setTimeout(function() {
+            ball.v = 70;
+            var r = Math.floor(Math.random() * 90);
+            ball.a = [r + 225,r + 45][winner == 0 ? 1 : 0];
+            ball.preparing = false;
+          },1500);
+        },2000);
+      }
     }
     if ( (ball.y <= canvas.height * 0.05 || ball.y >= canvas.height * 0.95) && ! ball.preparing ) {
-      currentlyLoaded.gameState.scores[ball.direction]++;
+      if ( ball.y >= canvas.height * 0.95 ) var winner = 0;
+      else var winner = 1;
+      currentlyLoaded.gameState.scores[winner]++;
       ball.preparing = true;
       setTimeout(function() {
         ball.g = 100;
@@ -138,7 +146,8 @@ class PingPong {
         ball.y = canvas.height / 2;
         setTimeout(function() {
           ball.v = 70;
-          ball.a = [270,90][ball.direction == 0 ? 1 : 0];
+          var r = Math.floor(Math.random() * 90);
+          ball.a = [r + 225,r + 45][winner == 0 ? 1 : 0];
           ball.preparing = false;
         },1500);
       },1000);
