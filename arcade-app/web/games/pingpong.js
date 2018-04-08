@@ -3,7 +3,7 @@ class PingPong {
     this.gameState = {
       paddles: [
         {
-          x: 200,
+          x: 400,
           v: 0,
           saveV: 0,
           shooting: 0
@@ -16,13 +16,16 @@ class PingPong {
         }
       ],
       ball: {
-        x: 200,
+        x: 0,
         y: 0,
         g: 100,
-        a: 90,
+        a: 70,
         v: 100,
-        goingUp: false
-      }
+        goingUp: false,
+        direction: 0,
+        preparing: false
+      },
+      scores: [0,0]
     }
   }
   init() {
@@ -54,10 +57,15 @@ class PingPong {
     ctx.beginPath();
     ctx.arc(ball.x,ball.y,5 + 20 * (ball.g / 100),0,2 * Math.PI);
     ctx.fill();
+    ctx.font = "80px Arial";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "white";
+    ctx.fillText(currentlyLoaded.gameState.scores[0],40,canvas.height / 2 - 40);
+    ctx.fillText(currentlyLoaded.gameState.scores[1],canvas.width - 40,canvas.height / 2 + 95);
     ball.x += (ball.v / 50) * Math.cos(Math.PI * ball.a / 180);
     ball.y += (ball.v / 50) * Math.sin(Math.PI * ball.a / 180);
     ball.v *= 0.998;
-    ball.g += ball.goingUp ? 1 : -1;
+    if ( ! ball.preparing ) ball.g += ball.goingUp ? 1 : -1;
     if ( ball.g <= 0 ) {
       if ( ! ball.stopped ) ball.goingUp = true;
       else ball.g = 1;
@@ -93,21 +101,32 @@ class PingPong {
         if ( paddles[1].saveV <= 0 ) paddles[1].shooting = 0;
       }
     }
-    if ( ball.x >= paddles[0].x - 100 && ball.x <= paddles[0].x + 100 && ball.y <= canvas.height * (0.15 * ((100 - paddles[0].v) / 100) + 0.05) ) {
-      var result = ball.a + 180;
-      if ( result >= 360 ) result -= 360;
-      if ( result <= 180 ) ball.a = result;
+    if ( ball.x >= paddles[0].x - 100 && ball.x <= paddles[0].x + 100 && ball.y <= canvas.height * (0.15 * ((100 - paddles[0].v) / 100) + 0.05) && ! ball.preparing ) {
+      ball.a = -ball.a;
       ball.v = Math.min(ball.v + paddles[0].saveV,100);
+      ball.direction = 0;
     }
-    if ( ball.x >= paddles[1].x - 100 && ball.x <= paddles[1].x + 100 && ball.y >= canvas.height * (1 - 0.15 * ((100 - paddles[1].v) / 100) - 0.05) ) {
-      var result = ball.a + 180;
-      if ( result >= 360 ) result -= 360;
-      if ( result > 180 ) ball.a = result;
+    if ( ball.x >= paddles[1].x - 100 && ball.x <= paddles[1].x + 100 && ball.y >= canvas.height * (1 - 0.15 * ((100 - paddles[1].v) / 100) - 0.05) && ! ball.preparing && ball.direction == 0 ) {
+      ball.a = -ball.a;
       ball.v = Math.min(ball.v + paddles[1].saveV,100);
+      ball.direction = 1;
     }
-    if ( ball.y >= canvas.height / 2 - 10 && ball.y <= canvas.height / 2 + 10 && ball.g <= 20 ) {
+    if ( ball.y >= canvas.height / 2 - 10 && ball.y <= canvas.height / 2 + 10 && ball.g <= 20 && ! ball.preparing ) {
       ball.a += 180;
       ball.v *= 0.75;
+      currentlyLoaded.gameState.scores[ball.direction == 0 ? 1 : 0]++;
+      ball.preparing = true;
+      setTimeout(function() {
+        ball.g = 100;
+        ball.v = 0;
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        setTimeout(function() {
+          ball.v = 70;
+          ball.a = [270,90][ball.direction];
+          ball.preparing = false;
+        },1500);
+      },2000);
     }
   }
 }
