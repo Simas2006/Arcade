@@ -101,12 +101,12 @@ class PingPong {
         if ( paddles[1].saveV <= 0 ) paddles[1].shooting = 0;
       }
     }
-    if ( ball.x >= paddles[0].x - 100 && ball.x <= paddles[0].x + 100 && ball.y <= canvas.height * (0.15 * ((100 - paddles[0].v) / 100) + 0.05) && ! ball.preparing && ! ball.hasBounced ) {
+    if ( ball.x >= paddles[0].x - 100 && ball.x <= paddles[0].x + 100 && ball.y <= canvas.height * (0.15 * ((100 - paddles[0].v) / 100) + 0.05) && ball.y >= canvas.height * 0.15 * ((100 - paddles[0].v) / 100) && ! ball.preparing && ! ball.hasBounced ) {
       ball.a = -ball.a;
       ball.v = Math.min(ball.v + paddles[0].saveV,100);
       ball.hasBounced = true;
     }
-    if ( ball.x >= paddles[1].x - 100 && ball.x <= paddles[1].x + 100 && ball.y >= canvas.height * (1 - 0.15 * ((100 - paddles[1].v) / 100) - 0.05) && ! ball.preparing && ! ball.hasBounced ) {
+    if ( ball.x >= paddles[1].x - 100 && ball.x <= paddles[1].x + 100 && ball.y >= canvas.height * (1 - 0.15 * ((100 - paddles[1].v) / 100) - 0.05) && ball.y <= canvas.height * (1 - 0.15 * ((100 - paddles[1].v) / 100)) && ! ball.preparing && ! ball.hasBounced ) {
       ball.a = -ball.a;
       ball.v = Math.min(ball.v + paddles[1].saveV,100);
       ball.hasBounced = true;
@@ -118,7 +118,6 @@ class PingPong {
         else var winner = 0;
         currentlyLoaded.gameState.scores[winner]++;
         ball.a += 180;
-        ball.v *= 0.75;
         ball.preparing = true;
         setTimeout(function() {
           ball.g = 100;
