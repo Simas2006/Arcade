@@ -3,14 +3,14 @@ class PingPong {
     this.gameState = {
       paddles: [
         {
-          x: 200,
+          x: window.innerWidth / 2,
           v: 0,
           saveV: 0,
           shooting: 0,
           direction: 0
         },
         {
-          x: 200,
+          x: window.innerWidth / 2,
           v: 0,
           saveV: 0,
           shooting: 0,
@@ -18,22 +18,40 @@ class PingPong {
         }
       ],
       ball: {
-        x: 0,
-        y: 50,
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
         g: 100,
         a: 45,
         v: 100,
         goingUp: false,
         direction: 0,
-        preparing: false
+        preparing: true
       },
       scores: [0,0]
+    }
+    this.directionalAPI = { // to be implemented
+      x: {
+        positive: Function.prototype,
+        negative: Function.prototype
+      },
+      z: {
+        positive: Function.prototype,
+        negative: Function.prototype
+      },
+      a: Function.prototype
     }
   }
   init() {
     setInterval(function() {
       currentlyLoaded.render();
     },10);
+    var ball = currentlyLoaded.gameState.ball;
+    setTimeout(function() {
+      ball.v = 70;
+      var r = Math.floor(Math.random() * 90);
+      ball.a = [r + 225,r + 45][Math.floor(Math.random() * 2)];
+      ball.preparing = false;
+    },1500);
   }
   render() {
     var canvas = document.getElementById("pingpong-canvas");
@@ -59,9 +77,19 @@ class PingPong {
     ctx.beginPath();
     ctx.arc(ball.x,ball.y,5 + 20 * (ball.g / 100),0,2 * Math.PI);
     ctx.fill();
-    ctx.font = "80px Arial";
     ctx.textAlign = "center";
-    ctx.fillStyle = "white";
+    var textColor = "white";
+    if ( currentlyLoaded.gameState.scores[0] >= 5 || currentlyLoaded.gameState.scores[1] >= 5 ) {
+      textColor = "black";
+      ctx.fillStyle = "white";
+      ctx.fillRect(0,canvas.height / 2 - 80,canvas.width,160);
+      ctx.font = "45px Arial";
+      var winner = ["red","blue"][currentlyLoaded.gameState.scores[0] >= 5 ? 0 : 1];
+      ctx.fillStyle = winner;
+      ctx.fillText(winner.toUpperCase() + " WINS",canvas.width / 2,canvas.height / 2);
+    }
+    ctx.font = "80px Arial";
+    ctx.fillStyle = textColor;
     ctx.fillText(currentlyLoaded.gameState.scores[0],40,canvas.height / 2 - 40);
     ctx.fillText(currentlyLoaded.gameState.scores[1],canvas.width - 40,canvas.height / 2 + 95);
     if ( ! ball.preparing ) ball.x += (Math.max(ball.v,10) / 50) * Math.cos(Math.PI * ball.a / 180);
@@ -120,7 +148,7 @@ class PingPong {
     if ( ball.y >= canvas.height / 2 - 10 && ball.y <= canvas.height / 2 + 10 ) {
       ball.hasBounced = false;
       if ( ball.g <= 20 && ! ball.preparing ) {
-        if ( ball.y < canvas.height ) var winner = 1;
+        if ( ball.y < canvas.height / 2 ) var winner = 1;
         else var winner = 0;
         currentlyLoaded.gameState.scores[winner]++;
         ball.a += 180;
@@ -131,6 +159,7 @@ class PingPong {
           ball.x = canvas.width / 2;
           ball.y = canvas.height / 2;
           setTimeout(function() {
+            if ( currentlyLoaded.gameState.scores[0] >= 5 || currentlyLoaded.gameState.scores[1] >= 5 ) return;
             ball.v = 70;
             var r = Math.floor(Math.random() * 90);
             ball.a = [r + 225,r + 45][winner == 0 ? 1 : 0];
@@ -149,6 +178,7 @@ class PingPong {
         ball.v = 0;
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
+        if ( currentlyLoaded.gameState.scores[0] >= 5 || currentlyLoaded.gameState.scores[1] >= 5 ) return;
         setTimeout(function() {
           ball.v = 70;
           var r = Math.floor(Math.random() * 90);
