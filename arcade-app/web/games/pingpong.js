@@ -6,13 +6,15 @@ class PingPong {
           x: 200,
           v: 0,
           saveV: 0,
-          shooting: 0
+          shooting: 0,
+          direction: 0
         },
         {
           x: 200,
           v: 0,
           saveV: 0,
-          shooting: 0
+          shooting: 0,
+          direction: 0
         }
       ],
       ball: {
@@ -62,9 +64,13 @@ class PingPong {
     ctx.fillStyle = "white";
     ctx.fillText(currentlyLoaded.gameState.scores[0],40,canvas.height / 2 - 40);
     ctx.fillText(currentlyLoaded.gameState.scores[1],canvas.width - 40,canvas.height / 2 + 95);
-    ball.x += (ball.v / 50) * Math.cos(Math.PI * ball.a / 180);
-    ball.y += (ball.v / 50) * Math.sin(Math.PI * ball.a / 180);
+    if ( ! ball.preparing ) ball.x += (Math.max(ball.v,10) / 50) * Math.cos(Math.PI * ball.a / 180);
+    if ( ! ball.preparing ) ball.y += (Math.max(ball.v,10) / 50) * Math.sin(Math.PI * ball.a / 180);
     ball.v *= 0.998;
+    if ( paddles[0].direction == -1 ) paddles[0].x--;
+    if ( paddles[0].direction == 1 ) paddles[0].x++;
+    if ( paddles[1].direction == -1 ) paddles[1].x--;
+    if ( paddles[1].direction == 1 ) paddles[1].x++;
     if ( ! ball.preparing ) ball.g += ball.goingUp ? 1 : -1;
     if ( ball.g <= 0 ) {
       if ( ! ball.stopped ) ball.goingUp = true;
