@@ -38,6 +38,8 @@ class PingPong {
     ctx.fillStyle = "green";
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = "white";
+    ctx.fillRect(canvas.width / 2 - 10,0,20,canvas.height);
+    ctx.fillStyle = "black";
     ctx.fillRect(0,0,canvas.width,canvas.height * 0.05);
     ctx.fillRect(0,canvas.height * 0.95,canvas.width,canvas.height * 0.05);
     ctx.fillStyle = "gray";
@@ -48,7 +50,7 @@ class PingPong {
     ctx.fillStyle = "blue";
     ctx.fillRect(paddles[1].x - 100,canvas.height * (1 - 0.15 * ((100 - paddles[1].v) / 100) - 0.05),200,canvas.height * 0.05);
     var ball = currentlyLoaded.gameState.ball;
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "#e6e6e6";
     ctx.beginPath();
     ctx.arc(ball.x,ball.y,5 + 20 * (ball.g / 100),0,2 * Math.PI);
     ctx.fill();
@@ -102,6 +104,10 @@ class PingPong {
       if ( result >= 360 ) result -= 360;
       if ( result > 180 ) ball.a = result;
       ball.v = Math.min(ball.v + paddles[1].saveV,100);
+    }
+    if ( ball.y >= canvas.height / 2 - 10 && ball.y <= canvas.height / 2 + 10 && ball.g <= 20 ) {
+      ball.a += 180;
+      ball.v *= 0.75;
     }
   }
 }
