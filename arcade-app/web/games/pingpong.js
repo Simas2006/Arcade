@@ -3,7 +3,7 @@ class PingPong {
     this.gameState = {
       paddles: [
         {
-          x: 400,
+          x: 200,
           v: 0,
           saveV: 0,
           shooting: 0
@@ -16,8 +16,8 @@ class PingPong {
         }
       ],
       ball: {
-        x: 0,
-        y: 0,
+        x: 100,
+        y: 200,
         g: 100,
         a: 70,
         v: 100,
@@ -127,6 +127,21 @@ class PingPong {
           ball.preparing = false;
         },1500);
       },2000);
+    }
+    if ( (ball.y <= canvas.height * 0.05 || ball.y >= canvas.height * 0.95) && ! ball.preparing ) {
+      currentlyLoaded.gameState.scores[ball.direction]++;
+      ball.preparing = true;
+      setTimeout(function() {
+        ball.g = 100;
+        ball.v = 0;
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        setTimeout(function() {
+          ball.v = 70;
+          ball.a = [270,90][ball.direction == 0 ? 1 : 0];
+          ball.preparing = false;
+        },1500);
+      },1000);
     }
   }
 }
