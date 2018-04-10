@@ -277,6 +277,8 @@ class Pacman {
         }
       }
     }
+    if ( pacman.x <= 0 && pacman.direction == 2 ) pacman.x = 18;
+    if ( pacman.x >= 18 && pacman.direction == 0 ) pacman.x = 0;
     var lives = currentlyLoaded.gameState.player.lives;
     if ( pacman.state >= 1 && timer >= 300 ) {
       if ( lives > 0 ) currentlyLoaded.gameState.player.modeTimer = 0;
