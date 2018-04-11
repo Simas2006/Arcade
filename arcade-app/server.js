@@ -12,11 +12,11 @@ app.get("/internal/connect",function(request,response) {
   if ( codes.length < 2 ) {
     var random = Math.floor(Math.random() * 1e8);
     codes.push(random);
+    activeSocket.emit("instruction",`{"type":"connection"}`);
     response.writeHead(200);
     response.write(random.toString());
     response.end();
   } else {
-    activeSocket.emit("instruction",`{"type":"connection"}`);
     response.writeHead(200);
     response.write("err_not_available");
     response.end();
@@ -25,8 +25,9 @@ app.get("/internal/connect",function(request,response) {
 
 app.get("/internal/disconnect",function(request,response) {
   var qs = decodeURIComponent(request.url.split("?").slice(1).join("?"));
+  var oldCodeLength = codes.length + 1;
   codes = codes.filter(item => item != qs);
-  activeSocket.emit("instruction",`{"type":"disconnection"}`);
+  if ( codes.length < oldCodeLength - 1 ) activeSocket.emit("instruction",`{"type":"disconnection"}`);
   response.writeHead(200);
   response.write("ok");
   response.end();
