@@ -36,6 +36,7 @@ app.get("/internal/disconnect",function(request,response) {
 app.get("/internal/move",function(request,response) {
   var qs = decodeURIComponent(request.url.split("?").slice(1).join("?"));
   var data = JSON.parse(qs);
+  data.code = parseInt(data.code)
   if ( codes.indexOf(data.code) <= -1 ) {
     response.writeHead(200);
     response.write("err_invalid_code");

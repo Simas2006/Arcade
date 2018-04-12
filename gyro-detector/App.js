@@ -1,8 +1,93 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo';
 
-export default class GyroApp extends React.Component {
+export default class MainApp extends React.Component {
+  state = {
+    mode: 0,
+    address: null,
+    code: null
+  }
+  render() {
+    var t = this;
+    if ( this.state.mode == 0 ) {
+      return (
+        <LoginPage onConnect={(address,code) => {
+          this.setState({
+            mode: 1,
+            address,
+            code
+          });
+        }} />
+      )
+    } else {
+      console.log(this.state);
+      return (
+        <DetectorPage address={this.state.address} code={this.state.code} onDisconnect={_ => {
+          this.setState({
+            mode: 0
+          });
+        }} />
+      );
+    }
+    return null;
+  }
+}
+
+class LoginPage extends React.Component {
+  state = {
+    address: ""
+  }
+  _connect() {
+    console.log("here");
+    var t = this;
+    var req = new XMLHttpRequest();
+    req.onload = function() {
+      if ( this.responseText == "err_not_available" ) {
+        Alert.alert("This machine cannot accept more controllers.","Please disconnect a different controller in order to connect.",[{
+          text: "OK",
+          onPress: Function.prototype
+        }]);
+      } else {
+        t.props.onConnect(t.state.address,this.responseText);
+      }
+    }
+    if ( ! this.state.address.startsWith("http://") ) this.state.address = "http://" + this.state.address;
+    req.open("GET",`${this.state.address}/internal/connect`);
+    req.send();
+  }
+  render() {
+    return (
+      <View>
+        <Text>{"\n\n"}</Text>
+        <TextInput
+          style={{
+            height: 50,
+            fontSize: 20,
+            borderColor: "gray",
+            borderWidth: 1
+          }}
+          autoCorrect={false}
+          placeholder={"Machine Address"}
+          onChangeText={text => this.setState({
+            address: text
+          })}
+        />
+        <TouchableOpacity style={{
+          backgroundColor: "#0088ff",
+          height: 40
+        }} activeOpacity = {.5} onPress={_ => this._connect.apply(this)}>
+          <Text style={{
+            textAlign: "center",
+            fontSize: 30
+          }}>Connect</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+}
+
+class DetectorPage extends React.Component {
   state = {
     accelerometerData: {},
     recentCalls: 0,
@@ -21,15 +106,29 @@ export default class GyroApp extends React.Component {
   _pressA(value) {
     this.state.aValue = value;
   }
-  _intentionalCrash() {
-    throw new Error("Disconnected from server.");
-  }
-  _sendInfo(info) {
+  _sendInfo(data) {
+    var t = this;
     var req = new XMLHttpRequest();
     req.onload = function() {
-      // ok
+      console.log(this.responseText)
+      if ( this.responseText != "ok" ) {
+        Alert.alert("You were disconnected","The machine was manually disconnected this controller.",[{
+          text: "OK",
+          onPress: t.props.onDisconnect
+        }]);
+      }
     }
-    req.open("GET",`http://10.0.1.97:8000/send?${info}`);
+    data.code = this.props.code;
+    req.open("GET",`${this.props.address}/internal/move?${JSON.stringify(data)}`);
+    req.send();
+  }
+  _disconnect() {
+    var t = this;
+    var req = new XMLHttpRequest();
+    req.onload = function() {
+      t.props.onDisconnect();
+    }
+    req.open("GET",`${this.props.address}/internal/disconnect?${this.props.code}`);
     req.send();
   }
   render() {
@@ -39,7 +138,7 @@ export default class GyroApp extends React.Component {
           backgroundColor: "#0099ff",
           paddingTop: "70%",
           paddingBottom: "70%"
-        }} activeOpacity = {.5} onPress={() => this._pressA(1)}>
+        }} activeOpacity = {.5} onPress={_ => this._pressA(1)}>
           <Text style={{
             textAlign: "center",
             fontSize: 50
@@ -49,7 +148,7 @@ export default class GyroApp extends React.Component {
           backgroundColor: "#00ff99",
           paddingTop: "20%",
           paddingBottom: "20%"
-        }} activeOpacity = {.5} onPress={() => this._pressA(-1)}>
+        }} activeOpacity = {.5} onPress={_ => this._pressA(-1)}>
           <Text style={{
             textAlign: "center",
             fontSize: 25
@@ -59,7 +158,7 @@ export default class GyroApp extends React.Component {
           backgroundColor: "#ff9900",
           paddingTop: "5%",
           paddingBottom: "10%"
-        }} activeOpacity = {.5} onPress={() => {throw new Error("Now disconnected from server.")}}>
+        }} activeOpacity = {.5} onPress={_ => this._disconnect.apply(this)}>
           <Text style={{
             textAlign: "center",
             fontSize: 15
@@ -93,7 +192,7 @@ export default class GyroApp extends React.Component {
       this.state.recentCalls = 6;
       this.state.recentCallItem = 2;
     }
-    if ( directions.x != 0 || directions.z != 0 || directions.a != 0 ) this._sendInfo(JSON.stringify(directions));
+    if ( directions.x != 0 || directions.z != 0 || directions.a != 0 ) this._sendInfo(directions);
     return _staticData;
   }
 }
