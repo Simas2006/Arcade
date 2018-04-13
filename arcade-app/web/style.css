@@ -2,6 +2,12 @@ body {
   font-family: "Arial";
   font-size: 120%;
 }
+.game {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
 #blackjack-game {
   padding-top: 0.005vw;
   background-color: #111;
@@ -15,9 +21,4 @@ body {
   padding: 5px;
   width: calc(16vh * 0.75);
   height: 16vh;
-}
-#blackjack-game,#pool-game,#pacman-game,#pingpong-game {
-  display: block;
-  width: 100vw;
-  height: 100vh;
 }

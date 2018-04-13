@@ -10,23 +10,27 @@
   <script src="games/pool.js"></script>
   <script src="games/pacman.js"></script>
   <script src="games/pingpong.js"></script>
+  <script src="games/shuffleboard.js"></script>
   <script src="script.js"></script>
 </head>
 <body>
-  <div id="blackjack-game">
+  <div id="blackjack-game" class="game">
     <p id="bj-player-info">Player Cards: (Total = 0)</p>
     <div id="bj-player-cards" class="bj-card-box"></div>
     <p id="bj-dealer-info">Dealer Cards: (Total = 0)</p>
     <div id="bj-dealer-cards" class="bj-card-box"></div>
   </div>
-  <div id="pool-game">
+  <div id="pool-game" class="game">
     <canvas id="pool-canvas"></canvas>
   </div>
-  <div id="pacman-game">
+  <div id="pacman-game" class="game">
     <canvas id="pacman-canvas"></canvas>
   </div>
-  <div id="pingpong-game">
+  <div id="pingpong-game" class="game">
     <canvas id="pingpong-canvas"></canvas>
+  </div>
+  <div id="shuffleboard-game" class="game">
+    <canvas id="shuffleboard-canvas"></canvas>
   </div>
 </body>
 </html>

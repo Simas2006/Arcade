@@ -3,9 +3,10 @@ var games = {
   blackjack: new Blackjack(),
   pool: new Pool(),
   pacman: new Pacman(),
-  pingpong: new PingPong()
+  pingpong: new PingPong(),
+  shuffleboard: new Shuffleboard()
 }
-var currentlyLoaded = null;
+var currentlyLoaded = games.shuffleboard;
 var activeControllers = 0;
 
 socket.on("instruction",function(message) {
