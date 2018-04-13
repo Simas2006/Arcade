@@ -3,12 +3,13 @@ body {
   font-size: 120%;
 }
 #blackjack-game {
+  padding-top: 0.005vw;
   background-color: black;
   color: white;
 }
 .bj-card-box {
   border: 1px solid white;
-  height: 46vh;
+  height: 44vh;
 }
 .bj-card-box > canvas {
   padding: 5px;
