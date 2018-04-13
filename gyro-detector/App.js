@@ -110,7 +110,6 @@ class DetectorPage extends React.Component {
     var t = this;
     var req = new XMLHttpRequest();
     req.onload = function() {
-      console.log(this.responseText)
       if ( this.responseText != "ok" ) {
         Alert.alert("You were disconnected","The machine was manually disconnected this controller.",[{
           text: "OK",

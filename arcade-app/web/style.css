@@ -4,7 +4,7 @@ body {
 }
 #blackjack-game {
   padding-top: 0.005vw;
-  background-color: black;
+  background-color: #111;
   color: white;
 }
 .bj-card-box {
