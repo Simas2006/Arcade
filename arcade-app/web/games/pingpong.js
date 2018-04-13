@@ -29,16 +29,32 @@ class PingPong {
       },
       scores: [0,0]
     }
-    this.directionalAPI = { // to be implemented
-      x: {
-        positive: Function.prototype,
-        negative: Function.prototype
+    this.directionalAPI = [
+      {
+        x: {
+          positive: function() { currentlyLoaded.gameState.paddles[0].direction = Math.sign(currentlyLoaded.gameState.paddles[0].direction + 1) },
+          negative: function() { currentlyLoaded.gameState.paddles[0].direction = Math.sign(currentlyLoaded.gameState.paddles[0].direction - 1) }
+        },
+        z: {
+          positive: Function.prototype,
+          negative: function() { currentlyLoaded.gameState.paddles[0].shooting = -1; currentlyLoaded.gameState.paddles[0].direction = 0 },
+        },
+        a: function() { currentlyLoaded.gameState.paddles[0].shooting = 1 }
       },
-      z: {
-        positive: Function.prototype,
-        negative: Function.prototype
-      },
-      a: Function.prototype
+      {
+        x: {
+          positive: function() { currentlyLoaded.gameState.paddles[1].direction = Math.sign(currentlyLoaded.gameState.paddles[1].direction + 1) },
+          negative: function() { currentlyLoaded.gameState.paddles[1].direction = Math.sign(currentlyLoaded.gameState.paddles[1].direction - 1) }
+        },
+        z: {
+          positive: Function.prototype,
+          negative: function() { currentlyLoaded.gameState.paddles[1].shooting = -1; currentlyLoaded.gameState.paddles[1].direction = 0 },
+        },
+        a: function() { currentlyLoaded.gameState.paddles[1].shooting = 1 }
+      }
+    ]
+    this.metadata = {
+      controllerType: 2
     }
   }
   init() {

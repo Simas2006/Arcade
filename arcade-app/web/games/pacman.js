@@ -47,14 +47,17 @@ class Pacman {
     }
     this.directionalAPI = {
       x: {
-        positive: function() { currentlyLoaded.gameState.nextDirection = 0 },
-        negative: function() { currentlyLoaded.gameState.nextDirection = 2 }
+        positive: function() { currentlyLoaded.gameState.objects[0].nextDirection = 0 },
+        negative: function() { currentlyLoaded.gameState.objects[0].nextDirection = 2 }
       },
       z: {
-        positive: function() { currentlyLoaded.gameState.nextDirection = 3 },
-        negative: function() { currentlyLoaded.gameState.nextDirection = 1 }
+        positive: function() { currentlyLoaded.gameState.objects[0].nextDirection = 3 },
+        negative: function() { currentlyLoaded.gameState.objects[0].nextDirection = 1 }
       },
       a: Function.prototype
+    }
+    this.metadata = {
+      controllerType: 0
     }
   }
   init() {
@@ -224,19 +227,19 @@ class Pacman {
         map[Math.round(pacman.y)][Math.round(pacman.x + 0.45) - 1],
         map[Math.round(pacman.y + 0.45) - 1][Math.round(pacman.x)]
       ];
-      if ( pacman.nextDirection == 0 && Math.floor((pacman.y - Math.floor(pacman.y)) * 10) == 0 && directions[0] != 0 && directions[0] != 4 ) {
+      if ( pacman.nextDirection == 0 && Math.round((pacman.y - Math.floor(pacman.y)) * 10) % 10 == 0 && directions[0] != 0 && directions[0] != 4 ) {
         pacman.direction = 0;
         pacman.nextDirection = -1;
       }
-      if ( pacman.nextDirection == 1 && Math.floor((pacman.x - Math.floor(pacman.x)) * 10) == 0 && directions[1] != 0 && directions[1] != 4 ) {
+      if ( pacman.nextDirection == 1 && Math.round((pacman.x - Math.floor(pacman.x)) * 10) % 10 == 0 && directions[1] != 0 && directions[1] != 4 ) {
         pacman.direction = 1;
         pacman.nextDirection = -1;
       }
-      if ( pacman.nextDirection == 2 && Math.floor((pacman.y - Math.floor(pacman.y)) * 10) == 0 && directions[2] != 0 && directions[2] != 4 ) {
+      if ( pacman.nextDirection == 2 && Math.round((pacman.y - Math.floor(pacman.y)) * 10) % 10 == 0 && directions[2] != 0 && directions[2] != 4 ) {
         pacman.direction = 2;
         pacman.nextDirection = -1;
       }
-      if ( pacman.nextDirection == 3 && Math.floor((pacman.x - Math.floor(pacman.x)) * 10) == 0 && directions[3] != 0 && directions[3] != 4 ) {
+      if ( pacman.nextDirection == 3 && Math.round((pacman.x - Math.floor(pacman.x)) * 10) % 10 == 0 && directions[3] != 0 && directions[3] != 4 ) {
         pacman.direction = 3;
         pacman.nextDirection = -1;
       }
@@ -284,6 +287,7 @@ class Pacman {
       if ( lives > 0 ) currentlyLoaded.gameState.player.modeTimer = 0;
       pacman.state = 0;
       pacman.direction = 0;
+      pacman.nextDirection = -1;
       currentlyLoaded.gameState.objects[1].state = 1;
       currentlyLoaded.gameState.objects[2].state = 1;
       currentlyLoaded.gameState.objects[3].state = 1;

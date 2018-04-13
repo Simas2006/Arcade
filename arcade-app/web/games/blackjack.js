@@ -9,7 +9,8 @@ class Blackjack {
       dealer: {
         sum: 0,
         aces: 0
-      }
+      },
+      mode: 0
     }
     this.winner = 0;
     this.directionalAPI = {
@@ -23,18 +24,22 @@ class Blackjack {
       },
       a: Function.prototype
     }
+    this.metadata = {
+      controllerType: 0
+    }
   }
   init() {
     for ( var i = 1; i <= 13; i++ ) {
       for ( var j = 0; j < 4; j++ ) {
-        this.gameState.activeDeck.push(["CDHS".split("")[j],i]);
+        currentlyLoaded.gameState.activeDeck.push(["CDHS".split("")[j],i]);
       }
     }
-    this.gameState.activeDeck = this.shuffle(this.gameState.activeDeck);
-    this.hit();
-    this.hit();
+    currentlyLoaded.gameState.activeDeck = currentlyLoaded.shuffle(currentlyLoaded.gameState.activeDeck);
+    currentlyLoaded.hit();
+    currentlyLoaded.hit();
   }
   hit() {
+    if ( currentlyLoaded.gameState.mode != 0 ) return;
     if ( currentlyLoaded.gameState.activeDeck.length <= 0 ) {
       for ( var i = 1; i <= 13; i++ ) {
         for ( var j = 0; j < 4; j++ ) {
@@ -64,6 +69,7 @@ class Blackjack {
     document.getElementById("bj-dealer-info").innerText = `Dealer cards: (Total = ${currentlyLoaded.gameState.dealer.sum}) ${["","WIN","LOSS"][currentlyLoaded.winner]}`;
   }
   stand() {
+    currentlyLoaded.gameState.mode = 1;
     var interval = setInterval(function() {
       if ( currentlyLoaded.gameState.activeDeck.length <= 0 ) {
         for ( var i = 1; i <= 13; i++ ) {

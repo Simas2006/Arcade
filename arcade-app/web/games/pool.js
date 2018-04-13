@@ -24,7 +24,7 @@ class Pool {
         solid: 0,
         stripe: 0,
         winner: 0,
-        active: 1
+        active: 0
       }
     }
     this.directionalAPI = {
@@ -41,9 +41,14 @@ class Pool {
       },
       a: Function.prototype
     }
+    this.metadata = {
+      controllerType: 1,
+      turn: 0
+    }
   }
   init() {
     setInterval(function() {
+      currentlyLoaded.metadata.turn = currentlyLoaded.gameState.players.active;
       currentlyLoaded.render();
       var direction = currentlyLoaded.gameState.cue.direction;
       if ( direction != 0 && currentlyLoaded.gameState.cue.shootCount <=  0 ) {
