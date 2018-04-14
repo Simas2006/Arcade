@@ -40,7 +40,7 @@ class Shuffleboard {
     ctx.fillText(currentlyLoaded.gameState.points[1],canvas.width * 0.892,canvas.height / 2 - 190);
     var puck = currentlyLoaded.gameState.puck;
     if ( puck.moving == 1 ) {
-      puck.x -= 0.69 * puck.s;
+      puck.x -= 0.00056 * canvas.width * puck.s;
       puck.s = Math.max(puck.s - 1,0);
     }
     if ( puck.s == 0 && puck.moving == 1 ) {
@@ -75,5 +75,13 @@ class Shuffleboard {
     }
     ctx.fillStyle = "#143770";
     ctx.fillRect(canvas.width * 0.6,canvas.height / 2 + 200,canvas.width * 0.33 * (1 - puck.s / 100),50);
+    if ( currentlyLoaded.gameState.points[0] >= 10 || currentlyLoaded.gameState.points[1] >= 10 ) {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0,canvas.height / 2 - 80,canvas.width,160);
+      ctx.font = "80px Arial";
+      var winner = ["red","blue"][currentlyLoaded.gameState.points[0] >= 5 ? 0 : 1];
+      ctx.fillStyle = winner;
+      ctx.fillText(winner.toUpperCase() + " WINS",canvas.width / 2,canvas.height / 2 + 30);
+    }
   }
 }
