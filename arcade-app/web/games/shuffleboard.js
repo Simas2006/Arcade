@@ -10,6 +10,20 @@ class Shuffleboard {
       points: [0,0],
       turn: 0
     }
+    this.directionalAPI = {
+      x: {
+        positive: function() { currentlyLoaded.gameState.puck.direction = 1; },
+        negative: function() { currentlyLoaded.gameState.puck.direction = -1; }
+      },
+      z: {
+        positive: function() { currentlyLoaded.gameState.puck.moving = 1; },
+        negative: Function.prototype
+      },
+      a: function() { currentlyLoaded.gameState.puck.moving = 1; }
+    }
+    this.metadata = {
+      controllerType: 1
+    }
   }
   init() {
     setInterval(function() {
