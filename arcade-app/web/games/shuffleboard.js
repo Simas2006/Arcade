@@ -3,14 +3,11 @@ class Shuffleboard {
     this.gameState = {
       puck: {
         x: window.innerWidth * 0.965,
-        s: 51,
-        moving: true,
+        s: 50,
+        moving: 0,
         direction: 1
       },
-      points: {
-        red: 0,
-        blue: 0
-      },
+      points: [0,0],
       turn: 0
     }
   }
@@ -35,10 +32,29 @@ class Shuffleboard {
       ctx.lineTo(canvas.width * (0.105 + 0.075 * i),canvas.height / 2 + 150);
       ctx.stroke();
     }
+    ctx.font = "60px Arial";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "red";
+    ctx.fillText(currentlyLoaded.gameState.points[0],canvas.width * 0.068,canvas.height / 2 - 190);
+    ctx.fillStyle = "lightblue";
+    ctx.fillText(currentlyLoaded.gameState.points[1],canvas.width * 0.892,canvas.height / 2 - 190);
     var puck = currentlyLoaded.gameState.puck;
-    if ( puck.moving ) {
+    if ( puck.moving == 1 ) {
       puck.x -= 0.69 * puck.s;
       puck.s = Math.max(puck.s - 1,0);
+    }
+    if ( puck.s == 0 && puck.moving == 1 ) {
+      puck.moving = -1;
+      if ( puck.x < canvas.width * 0.255 && puck.x > canvas.width * 0.03 ) {
+        currentlyLoaded.gameState.points[currentlyLoaded.gameState.turn]++;
+        if ( puck.x < canvas.width * 0.18 ) currentlyLoaded.gameState.points[currentlyLoaded.gameState.turn]++;
+        if ( puck.x < canvas.width * 0.105 ) currentlyLoaded.gameState.points[currentlyLoaded.gameState.turn]++;
+      }
+      setTimeout(function() {
+        puck.x = canvas.width * 0.965;
+        puck.moving = 0;
+        currentlyLoaded.gameState.turn = currentlyLoaded.gameState.turn == 0 ? 1 : 0;
+      },1500);
     }
     ctx.fillStyle = ["red","blue"][currentlyLoaded.gameState.turn];
     ctx.beginPath();
@@ -48,9 +64,7 @@ class Shuffleboard {
     ctx.beginPath();
     ctx.arc(puck.x,canvas.height / 2,canvas.width * 0.0165,0,2 * Math.PI);
     ctx.fill();
-    ctx.font = "60px Arial";
     ctx.fillStyle = "black";
-    ctx.textAlign = "center";
     for ( var i = 0; i < 3; i++ ) {
       ctx.fillText(3 - i,canvas.width * (0.068 + 0.075 * i),canvas.height / 2 + 20);
     }
