@@ -3,9 +3,9 @@ class Shuffleboard {
     this.gameState = {
       puck: {
         x: window.innerWidth * 0.965,
-        s: 50,
+        s: 0,
         moving: 0,
-        direction: 1
+        direction: -1
       },
       points: [0,0],
       turn: 0
@@ -39,6 +39,10 @@ class Shuffleboard {
     ctx.fillStyle = "lightblue";
     ctx.fillText(currentlyLoaded.gameState.points[1],canvas.width * 0.892,canvas.height / 2 - 190);
     var puck = currentlyLoaded.gameState.puck;
+    if ( puck.moving == 0 ) {
+      if ( puck.direction == -1 ) puck.s = Math.min(puck.s + 0.5,100);
+      else puck.s = Math.max(puck.s - 0.5,0);
+    }
     if ( puck.moving == 1 ) {
       puck.x -= 0.00056 * canvas.width * puck.s;
       puck.s = Math.max(puck.s - 1,0);
@@ -74,7 +78,7 @@ class Shuffleboard {
       ctx.fillRect(canvas.width * (0.6 + i * 0.033),canvas.height / 2 + 200,canvas.width * 0.033,50);
     }
     ctx.fillStyle = "#143770";
-    ctx.fillRect(canvas.width * 0.6,canvas.height / 2 + 200,canvas.width * 0.33 * (1 - puck.s / 100),50);
+    ctx.fillRect(canvas.width * 0.6,canvas.height / 2 + 195,canvas.width * 0.33 * (1 - puck.s / 100),60);
     if ( currentlyLoaded.gameState.points[0] >= 10 || currentlyLoaded.gameState.points[1] >= 10 ) {
       ctx.fillStyle = "white";
       ctx.fillRect(0,canvas.height / 2 - 80,canvas.width,160);
