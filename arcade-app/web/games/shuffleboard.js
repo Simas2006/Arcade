@@ -22,7 +22,14 @@ class Shuffleboard {
       a: function() { currentlyLoaded.gameState.puck.moving = 1; }
     }
     this.metadata = {
-      controllerType: 1
+      controllerType: 1,
+      help: ``
+    }
+  }
+  static metadata() {
+    return {
+      controllerType: 1,
+      help: ``
     }
   }
   init() {

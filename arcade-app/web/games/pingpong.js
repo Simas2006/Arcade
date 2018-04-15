@@ -54,7 +54,14 @@ class PingPong {
       }
     ]
     this.metadata = {
-      controllerType: 2
+      controllerType: 2,
+      help: ``
+    }
+  }
+  static metadata() {
+    return {
+      controllerType: 2,
+      help: ``
     }
   }
   init() {

@@ -57,7 +57,14 @@ class Pacman {
       a: Function.prototype
     }
     this.metadata = {
-      controllerType: 0
+      controllerType: 0,
+      help: ``
+    }
+  }
+  static metadata() {
+    return {
+      controllerType: 0,
+      help: ``
     }
   }
   init() {

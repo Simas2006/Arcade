@@ -43,7 +43,15 @@ class Pool {
     }
     this.metadata = {
       controllerType: 1,
-      turn: 0
+      turn: 0,
+      help: ``
+    }
+  }
+  static metadata() {
+    return {
+      controllerType: 1,
+      turn: 0,
+      help: ``
     }
   }
   init() {
