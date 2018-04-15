@@ -70,7 +70,7 @@ class Pacman {
   init() {
     currentlyLoaded.gameState.player.killScreenArray = currentlyLoaded.shuffle(["red","orange","yellow","green","blue","purple","white"]);
     currentlyLoaded.gameState.map = currentlyLoaded.gameState.originalMap.map(item => [].concat(item));
-    setInterval(function() {
+    currentlyLoaded.interval = setInterval(function() {
       currentlyLoaded.render();
     },10);
   }
@@ -370,5 +370,8 @@ class Pacman {
       a[j] = x;
     }
     return a;
+  }
+  unmount() {
+    clearInterval(currentlyLoaded.interval);
   }
 }

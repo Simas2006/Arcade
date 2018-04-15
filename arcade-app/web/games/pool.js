@@ -55,7 +55,7 @@ class Pool {
     }
   }
   init() {
-    setInterval(function() {
+    currentlyLoaded.interval = setInterval(function() {
       currentlyLoaded.metadata.turn = currentlyLoaded.gameState.players.active;
       currentlyLoaded.render();
       var direction = currentlyLoaded.gameState.cue.direction;
@@ -230,5 +230,8 @@ class Pool {
       ctx.font = "40px Arial";
       ctx.fillText([null,"SOLID","STRIPE"][winner] + " WINS",canvas.width / 2,canvas.height / 2);
     }
+  }
+  unmount() {
+    clearInterval(currentlyLoaded.interval);
   }
 }

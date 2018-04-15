@@ -220,4 +220,5 @@ class Blackjack {
       ctx.fillText(cardID[1],card.width * 0.65,card.height * 0.75);
     }
   }
+  unmount() {}
 }

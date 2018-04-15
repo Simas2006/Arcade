@@ -65,7 +65,7 @@ class PingPong {
     }
   }
   init() {
-    setInterval(function() {
+    currentlyLoaded.interval = setInterval(function() {
       currentlyLoaded.render();
     },10);
     var ball = currentlyLoaded.gameState.ball;
@@ -214,5 +214,8 @@ class PingPong {
       if ( ball.a > 180 ) ball.a += 90;
       else ball.a -= 90;
     }
+  }
+  unmount() {
+    clearInterval(currentlyLoaded.interval);
   }
 }

@@ -33,7 +33,7 @@ class Shuffleboard {
     }
   }
   init() {
-    setInterval(function() {
+    currentlyLoaded.interval = setInterval(function() {
       currentlyLoaded.render();
     },10);
   }
@@ -108,5 +108,8 @@ class Shuffleboard {
       ctx.fillStyle = winner;
       ctx.fillText(winner.toUpperCase() + " WINS",canvas.width / 2,canvas.height / 2 + 30);
     }
+  }
+  unmount() {
+    clearInterval(currentlyLoaded.interval);
   }
 }
