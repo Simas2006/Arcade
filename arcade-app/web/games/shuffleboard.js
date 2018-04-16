@@ -23,13 +23,17 @@ class Shuffleboard {
     }
     this.metadata = {
       controllerType: 1,
-      help: ``
+      help: `Swing left to increase puck strength
+Swing right to decrease puck strength
+Swing forward or press Ⓐ in game to shoot puck`
     }
   }
   static metadata() {
     return {
       controllerType: 1,
-      help: ``
+      help: `Swing left to increase puck strength
+Swing right to decrease puck strength
+Swing forward or press Ⓐ in game to shoot puck`
     }
   }
   init() {

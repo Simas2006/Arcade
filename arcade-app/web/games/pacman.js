@@ -58,13 +58,19 @@ class Pacman {
     }
     this.metadata = {
       controllerType: 0,
-      help: ``
+      help: `Swing forward to turn upward
+Swing backward to turn downward
+Swing left to turn left
+Swing right to turn right`
     }
   }
   static metadata() {
     return {
       controllerType: 0,
-      help: ``
+      help: `Swing forward to turn upward
+Swing backward to turn downward
+Swing left to turn left
+Swing right to turn right`
     }
   }
   init() {

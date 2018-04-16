@@ -55,13 +55,19 @@ class PingPong {
     ]
     this.metadata = {
       controllerType: 2,
-      help: ``
+      help: `Swing left to move paddle left
+Swing right to move paddle right
+Swing backward to pull paddle backward
+Press Ⓐ in game to shoot paddle`
     }
   }
   static metadata() {
     return {
       controllerType: 2,
-      help: ``
+      help: `Swing left to move paddle left
+Swing right to move paddle right
+Swing backward to pull paddle backward
+Press Ⓐ in game to shoot paddle`
     }
   }
   init() {

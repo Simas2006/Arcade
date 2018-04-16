@@ -44,14 +44,20 @@ class Pool {
     this.metadata = {
       controllerType: 1,
       turn: 0,
-      help: ``
+      help: `Swing left to move cue leftward
+Swing right to move cue rightward
+Swing forward to pull back cue
+Swing forward again to shoot cue`
     }
   }
   static metadata() {
     return {
       controllerType: 1,
       turn: 0,
-      help: ``
+      help: `Swing left to move cue leftward
+Swing right to move cue rightward
+Swing forward to pull back cue
+Swing forward again to shoot cue`
     }
   }
   init() {

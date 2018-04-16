@@ -26,13 +26,15 @@ class Blackjack {
     }
     this.metadata = {
       controllerType: 0,
-      help: ``
+      help: `Swing forward to hit
+Swing backward to stand`
     }
   }
   static metadata() {
     return {
       controllerType: 0,
-      help: ``
+      help: `Swing forward to hit
+Swing backward to stand`
     }
   }
   init() {
