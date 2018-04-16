@@ -4,6 +4,20 @@ class Home {
   constructor() {
     this.selected = 0;
     this.isHomePage = true;
+    this.directionalAPI = {
+      x: {
+        positive: Function.prototype,
+        negative: Function.prototype
+      },
+      z: {
+        positive: function() { currentlyLoaded.move(-1) },
+        negative: function() { currentlyLoaded.move(1) }
+      },
+      a: function() { currentlyLoaded.launch() }
+    }
+    this.metadata = {
+      controllerType: 0
+    }
   }
   init() {
     var box = document.getElementById("home-game");
@@ -28,7 +42,7 @@ class Home {
     var help = document.createElement("p");
     help.id = "home-help-text";
     box.appendChild(help);
-    setInterval(function() {
+    currentlyLoaded.interval = setInterval(function() {
       currentlyLoaded.update();
     },10);
   }
@@ -51,6 +65,23 @@ Press Ⓐ to start!`;
       document.getElementById("home-help-text").innerText = "There are no controllers connected.";
     }
   }
+  move(direction) {
+    var active = Object.keys(games).filter(item => item != "home" && activeControllers == (games[item].metadata().controllerType > 0 ? 2 : 1));
+    if ( direction > 0 && this.selected == active.length - 1 ) return;
+    if ( direction < 0 && this.selected == 0 ) return;
+    this.selected += direction;
+  }
+  launch() {
+    var active = Object.keys(games).filter(item => item != "home" && activeControllers == (games[item].metadata().controllerType > 0 ? 2 : 1));
+    openGame(active[currentlyLoaded.selected]);
+  }
+  unmount() {
+    clearInterval(currentlyLoaded.interval);
+    var box = document.getElementById("home-game");
+    while ( box.firstChild ) {
+      box.removeChild(box.firstChild);
+    }
+  }
 }
 
 var games = {
@@ -64,6 +95,19 @@ var games = {
 var currentlyLoaded = new games.home();
 var activeControllers = 0;
 
+function openGame(name) {
+  currentlyLoaded.unmount();
+  var list = Object.keys(games);
+  for ( var i = 0; i < list.length; i++ ) {
+    document.getElementById(list[i] + "-game").style.display = "none";
+  }
+  document.getElementById(name + "-game").style.display = "block";
+  currentlyLoaded = new games[name]();
+  setTimeout(function() {
+    currentlyLoaded.init();
+  },500);
+}
+
 socket.on("instruction",function(message) {
   message = JSON.parse(message);
   if ( message.type == "connection" ) {
@@ -75,6 +119,9 @@ socket.on("instruction",function(message) {
     if ( currentlyLoaded.isHomePage ) currentlyLoaded.selected = 0;
   }
   if ( message.type == "direction" ) {
+    if ( message.data.a < 0 ) {
+      if ( ! currentlyLoaded.isHomePage ) openGame("home");
+    }
     if ( currentlyLoaded.metadata.controllerType == 0 && message.controller != 0 ) return;
     if ( currentlyLoaded.metadata.controllerType == 1 && message.controller != currentlyLoaded.metadata.turn ) return;
     var api = currentlyLoaded.directionalAPI;
@@ -84,12 +131,9 @@ socket.on("instruction",function(message) {
     if ( message.data.z > 0 ) api.z.negative();
     if ( message.data.z < 0 ) api.z.positive();
     if ( message.data.a > 0 ) api.a();
-    if ( message.data.a < 0 ) {
-      // run home code
-    }
   }
 });
 
-
-
-if ( currentlyLoaded ) window.onload = currentlyLoaded.init;
+window.onload = function() {
+  openGame("home");
+}

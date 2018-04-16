@@ -3,7 +3,7 @@ body {
   font-size: 120%;
 }
 .game {
-  display: block;
+  display: none;
   width: 100vw;
   height: 100vh;
 }
@@ -11,6 +11,7 @@ body {
 #blackjack-game {
   background-color: #111;
   color: white;
+  padding-top: 5px;
 }
 .bj-card-box {
   border: 1px solid white;
@@ -20,10 +21,10 @@ body {
   padding: 5px;
   width: calc(16vh * 0.75);
   height: 16vh;
+  padding-top: 5px;
 }
 
 #home-game {
-  padding-top: 0.005vh;
   background-color: #333;
   color: white;
 }
