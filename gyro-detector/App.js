@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo';
 
 export default class MainApp extends React.Component {
@@ -39,7 +39,6 @@ class LoginPage extends React.Component {
     address: ""
   }
   _connect() {
-    console.log("here");
     var t = this;
     var req = new XMLHttpRequest();
     req.onload = function() {
@@ -131,36 +130,37 @@ class DetectorPage extends React.Component {
     req.send();
   }
   render() {
+    var height = Dimensions.get("window").height
     var _staticData = (
       <View>
         <TouchableOpacity style={{
           backgroundColor: "#0099ff",
-          paddingTop: "70%",
-          paddingBottom: "70%"
+          height: height * .7
         }} activeOpacity = {.5} onPress={_ => this._pressA(1)}>
           <Text style={{
             textAlign: "center",
-            fontSize: 50
+            fontSize: 50,
+            paddingTop: height * .35
           }}>A</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{
           backgroundColor: "#00ff99",
-          paddingTop: "20%",
-          paddingBottom: "20%"
+          height: height * .2
         }} activeOpacity = {.5} onPress={_ => this._pressA(-1)}>
           <Text style={{
             textAlign: "center",
-            fontSize: 25
+            fontSize: 25,
+            paddingTop: height * .1
           }}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{
           backgroundColor: "#ff9900",
-          paddingTop: "5%",
-          paddingBottom: "10%"
+          height: height * .1
         }} activeOpacity = {.5} onPress={_ => this._disconnect.apply(this)}>
           <Text style={{
             textAlign: "center",
-            fontSize: 15
+            fontSize: 15,
+            paddingTop: height * .05
           }}>Disconnect</Text>
         </TouchableOpacity>
       </View>
