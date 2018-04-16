@@ -46,7 +46,7 @@ class Blackjack {
     currentlyLoaded.hit();
   }
   hit() {
-    if ( currentlyLoaded.gameState.mode != 0 ) return;
+    if ( currentlyLoaded.gameState.mode != 0 || currentlyLoaded.winner > 0 ) return;
     if ( currentlyLoaded.gameState.activeDeck.length <= 0 ) {
       for ( var i = 1; i <= 13; i++ ) {
         for ( var j = 0; j < 4; j++ ) {
@@ -72,12 +72,33 @@ class Blackjack {
     if ( currentlyLoaded.gameState.player.sum == 21 ) {
       currentlyLoaded.winner = 2;
     }
+    if ( currentlyLoaded.winner > 0 ) {
+      setTimeout(function() {
+        currentlyLoaded.gameState = {
+          activeDeck: [],
+          player: {
+            sum: 0,
+            aces: 0
+          },
+          dealer: {
+            sum: 0,
+            aces: 0
+          },
+          mode: 0
+        }
+        currentlyLoaded.winner = 0;
+        currentlyLoaded.unmount();
+        currentlyLoaded.hit();
+        currentlyLoaded.hit();
+      },3000);
+    }
     document.getElementById("bj-player-info").innerText = `Player cards: (Total = ${currentlyLoaded.gameState.player.sum}) ${["","LOSS","WIN"][currentlyLoaded.winner]}`;
     document.getElementById("bj-dealer-info").innerText = `Dealer cards: (Total = ${currentlyLoaded.gameState.dealer.sum}) ${["","WIN","LOSS"][currentlyLoaded.winner]}`;
   }
   stand() {
+    if ( currentlyLoaded.gameState.mode != 0 || currentlyLoaded.winner > 0 ) return;
     currentlyLoaded.gameState.mode = 1;
-    var interval = setInterval(function() {
+    currentlyLoaded.interval = setInterval(function() {
       if ( currentlyLoaded.gameState.activeDeck.length <= 0 ) {
         for ( var i = 1; i <= 13; i++ ) {
           for ( var j = 0; j < 4; j++ ) {
@@ -104,7 +125,27 @@ class Blackjack {
       }
       if ( currentlyLoaded.gameState.dealer.sum == 21 ) currentlyLoaded.winner = 1;
       if ( currentlyLoaded.gameState.dealer.sum >= currentlyLoaded.gameState.player.sum ) currentlyLoaded.winner = 1;
-      if ( currentlyLoaded.winner > 0 ) clearInterval(interval);
+      if ( currentlyLoaded.winner > 0 ) {
+        clearInterval(currentlyLoaded.interval);
+        setTimeout(function() {
+          currentlyLoaded.gameState = {
+            activeDeck: [],
+            player: {
+              sum: 0,
+              aces: 0
+            },
+            dealer: {
+              sum: 0,
+              aces: 0
+            },
+            mode: 0
+          }
+          currentlyLoaded.winner = 0;
+          currentlyLoaded.unmount();
+          currentlyLoaded.hit();
+          currentlyLoaded.hit();
+        },3000);
+      }
       document.getElementById("bj-player-info").innerText = `Player cards: (Total = ${currentlyLoaded.gameState.player.sum}) ${["","LOSS","WIN"][currentlyLoaded.winner]}`;
       document.getElementById("bj-dealer-info").innerText = `Dealer cards: (Total = ${currentlyLoaded.gameState.dealer.sum}) ${["","WIN","LOSS"][currentlyLoaded.winner]}`;
     },1000);
@@ -220,5 +261,17 @@ class Blackjack {
       ctx.fillText(cardID[1],card.width * 0.65,card.height * 0.75);
     }
   }
-  unmount() {}
+  unmount() {
+    clearInterval(currentlyLoaded.interval);
+    var box = document.getElementById("bj-player-cards");
+    while ( box.firstChild ) {
+      box.removeChild(box.firstChild);
+    }
+    var box = document.getElementById("bj-dealer-cards");
+    while ( box.firstChild ) {
+      box.removeChild(box.firstChild);
+    }
+    document.getElementById("bj-player-info").innerText = "Player Cards: (Total = 0)";
+    document.getElementById("bj-dealer-info").innerText = "Player Cards: (Total = 0)";
+  }
 }
